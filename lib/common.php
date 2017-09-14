@@ -64,7 +64,7 @@ function postCurl($url,$data,$is_xml=false, $second=30){
     //要求结果为字符串且输出到屏幕上
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
     if($is_xml){
-        $header[] = "Content-type: text/xml";        //定义content-type为xml,注意是数组     
+        $header[] = "Content-type: text/xml";        //定义content-type为xml,注意是数组
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
     }
     //post提交方式
@@ -83,4 +83,43 @@ function postCurl($url,$data,$is_xml=false, $second=30){
     }
 }
 
+/**
+ * use for: 靓号识别
+ * @param $phone
+ * @return bool
+ * date:2017-09-13   10:09
+ */
+function getPhoneType($phone){
+
+    $phone_rules = array(
+        '尾号ABCDABCD'=>'/\d{3}((?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){3}\d)\1/',
+        '尾号AAAAAA	'=>'/\d{5}(\d)\1\1\1\1\1/',
+        '尾号AAABBB	'=>'/\d{5}(\d)\1\1(\d)\2\2/',
+        '尾号AABBCC	'=>'/\d{5}(\d)\1(\d)\2(\d)\3/',
+        '尾号AAAAA	'=>'/\d{6}(\d)\1\1\1\1/',
+        '尾号AABBB	'=>'/\d{6}(\d)\1(\d)\2\2/',
+        '尾号ABCDE	'=>'/\d{6}(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){4}\d/',
+        '尾号AABAA	'=>'/\d{6}(\d)\1(\d)\1\1/',
+        '尾号AAAAB	'=>'/\d{6}(\d)\1\1\1(\d)/',
+        '中间AAAA	'=>'/(\d)\1\1\1\d{1}/',
+        '尾号AAAA	'=>'/\d{7}(\d)\1\1\1/',
+        '尾号ABCD	'=>'/\d{7}(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){3}\d/',
+        '尾号AAAB	'=>'/\d{7}(\d)\1\1(\d)/',
+        '尾号AABA	'=>'/\d{7}(\d)\1(\d)\1/',
+        '尾号ABAA	'=>'/\d{7}(\d)(\d)\1\1/',
+        '尾号ABBA	'=>'/\d{7}(\d)(\d)\2\1/',
+        '尾号ABAB	'=>'/\d{7}(\d)(\d)\1\2/',
+        '尾号ABC	'=>'/\d{8}(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){2}\d/',
+        '中间AAA	'=>'/(\d)\1\1\d{1}/',
+        '尾号AAA	'=>'/\d{8}(\d)\1\1/',
+        '尾号AA		'=>'/\d{9}(\d)\1/'
+    );
+
+    foreach($phone_rules as $k =>$v){
+        if(preg_match($v,$phone)){
+            return $k;
+        }
+    }
+    return false;
+}
 
