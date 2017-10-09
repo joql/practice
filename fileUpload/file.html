@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>上传文件</title>
+</head>
+<body>
+
+<span>请选择文件</span>
+<form action="file.php" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="MAX_FILE_SIZE" value="" />
+    <input type="file" id="my_file" name="my_file" accept="上传类型"/>
+    <button type="submit" >提交</button>
+
+</form>
+</body>
+</html>
