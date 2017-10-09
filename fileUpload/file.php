@@ -31,8 +31,12 @@ if(!is_array(getimagesize($tmp_name))) die();
 //获取文件名后缀
 $ext = pathinfo($file['name'],PATHINFO_EXTENSION);
 
+//检测路径
+$save_path = './../public/uploads/';
+if(is_file($save_path)) mkdir($save_path,0777,true); //true表示创建多级目录
+$save_path = $save_path.uniqid(microtime(true),true).'.'.$ext;
+
 //保存图片
-$save_path = './../public/uploads/'.uniqid(microtime(true),true).'.'.$ext;
 //if($err_code == UPLOAD_ERR_OK) echo move_uploaded_file($tmp_name,'./../public/uploads/'.iconv("UTF-8", "GBK", $name));
 if($err_code == UPLOAD_ERR_OK) echo move_uploaded_file($tmp_name,$save_path);
 
