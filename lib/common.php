@@ -6,6 +6,15 @@
  * Time: 22:02
  */
 
+/**
+ * use for: curl
+ * @param $url
+ * @param array $array
+ * @param string $type
+ * @return bool|mixed
+ * auth: ksj
+ * date:2017-10-10   15:20
+ */
 function curl($url,array $array ,$type = 'post') {
     $ch = curl_init();
     if($type == 'get'){
