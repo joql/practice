@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>post</title>
+
+    <style>
+        div{text-align: center;left: 0px}
+        .group{margin-top: 10px}
+    </style>
+</head>
+<body>
+    <span>提交数据部分</span>
+    <hr />
+    <div id="div_request">
+        <form id="f_post" method="post" enctype="multipart/form-data">
+            <div class="group">
+                <label>url</label>
+                <input type="text" name="url" style="width:500px;"/>
+            </div>
+            <div class="group">
+                <label> key</label>
+                <input type="text" name="key[]"/>
+                <label> val</label>
+                <input type="text" name="val[]"/>
+            </div>
+        </form>
+        <button type="button" id="btn_post" name="btn_post">提交</button>
+        <button type="button" id="btn_add" name="btn_add">新增</button>
+    </div>
+    <span>数据显示部分</span>
+    <hr />
+    <div id="div_response">
+
+    </div>
+    <script type="text/javascript" src="../public/js/jquery.min.js"></script>
+    <script type="text/javascript">
+        $('#btn_add').click(function () {
+            var str ='';
+            str = '<div class="group">\
+                <label> key</label>\
+                <input type="text" name="key[]"/>\
+                <label> val</label>\
+                <input type="text" name="val[]"/>\
+                </div>';
+            $('#f_post').append(str);
+        });
+        $('#btn_post').click(function () {
+            $.ajax({
+                url:"post.php",
+                type:"post",
+                data: $('#f_post').serialize(),
+                dataType:"json",
+                success:function(data){
+                    if(data.code == 1){
+                        $('#div_response').empty();
+                        $('#div_response').append(data.message);
+                    }
+                },
+                error:function(xmlHttpRequest,textStatus,errorThrown){
+                    alert(textStatus+"出错！"+errorThrown);
+                }
+            })
+        });
+    </script>
+</body>
+</html>

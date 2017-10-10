@@ -6,52 +6,47 @@
  * Time: 22:02
  */
 
-/**
- * use for: curl请求
- * @param $url
- * @param string $type
- * @param string $request_data
- * @return array|mixed
- * date:2017-09-11 22:36
- */
-function curlRequest($url, $type = 'post', $request_data = '') {
-    $header = array(
-        "Content-Type:application/x-www-form-urlencoded;charset=UTF-8",
-        "Connection:Keep-Alive",
-        'Accept:application/json',
-    );
-
+function curl($url,array $array ,$type = 'post') {
     $ch = curl_init();
-    /* cURL settings */
-    curl_setopt($ch, CURLOPT_URL, $url);
-
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    if ($type == 'post') {
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $request_data);
+    if($type == 'get'){
+        if(is_array($array)) {
+            $query = http_build_query($array);
+            $url = $url . '?' . $query;
+        }
     }
-    $result = curl_exec($ch);
+    if(stripos($url, "https://") !== false) {
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    }
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
+    if($type == 'post'){
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $array);
+    }
+    $content = curl_exec($ch);
+    $status = curl_getinfo($ch);
     curl_close($ch);
-    return $result;
-    //return $data = empty($result) ? array(1) : json_decode($result, true);
+    if(intval($status["http_code"]) == 200) {
+        return $content;
+    } else {
+        echo $status["http_code"];
+        return false;
+    }
 }
 
 /**
- * use for:
- * @param $url
- * @param $data
- * @param bool $is_xml
- * @param int $second
- * @return mixed|string
- * date:2017-09-12 22:00
- */
-function postCurl($url,$data,$is_xml=false, $second=30){
+ * TODO: CURL模拟POST提交
+ * @description PHP模拟网页post提交
+ * @author AriFe.Liu
+ * @time 2017年3月21日10:21:08
+ * @param data 要发送的数据，可以为xml或数组
+ * @param url  String 请求地址
+ * @param is_xml Bool 是否是xml数据(xml数据需要设定特定的包头信息，所以如果提交xml数据，需要将此参数设为true)
+ * @param second Int 等待超时时间，默认30s
+ * @return 远端返回的响应信息
+ * */
+function postCurl($url, $data, $is_xml=false, $second=30){
     $ch = curl_init();
     //设置超时
     curl_setopt($ch, CURLOPT_TIMEOUT, $second);
@@ -131,4 +126,17 @@ function xmlToArray($xml){
     //将XML转为array
     $array_data = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
     return $array_data;
+}
+
+/**
+ * use for:json格式化返回
+ * @param $code
+ * @param string $msg
+ * @param array $data
+ * @return string
+ * date:2017-09-12   17:10
+ */
+function returnAjax($code, $msg = '', $data = array()){
+    header('Content-Type:application/json; charset=utf-8');
+    exit(json_encode(array('code' => $code, 'data' => $data, 'message' => $msg)));
 }

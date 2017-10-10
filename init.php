@@ -11,3 +11,4 @@ define('ROOT',dirname(__FILE__));
 define('LIB_ROOT',dirname(__FILE__).'/lib/');
 
 require LIB_ROOT.'common.php';
+//require LIB_ROOT.'curl.class.php';
