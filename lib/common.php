@@ -149,3 +149,15 @@ function returnAjax($code, $msg = '', $data = array()){
     header('Content-Type:application/json; charset=utf-8');
     exit(json_encode(array('code' => $code, 'data' => $data, 'message' => $msg)));
 }
+
+/**
+ * use for:下载文件
+ * @param $filepath
+ * user: ksj
+ * date:2017-10-10 23:08
+ */
+function download($filepath){
+    header('content-disposition:attachment;filename='.basename($filepath));
+    header('content-length:'.filesize($filepath));
+    readfile($filepath);
+}
