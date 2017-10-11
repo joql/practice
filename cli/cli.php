@@ -9,6 +9,7 @@ require '../init.php';
 
 header('content-type:text/html;charset=gb2312');
 $count = 0;
+saveFile('save.txt',123);die();
 do{
     $arr_tels = array();//手机号数组
     $str = '';//写入字符串
