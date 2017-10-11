@@ -39,3 +39,4 @@ QRcode::png('http://b.kylinqi.cn');*/
 XML;
 
 var_dump(xmlToArray($xml));*/
+//download('./init.php');
