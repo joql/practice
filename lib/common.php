@@ -15,10 +15,10 @@
  * auth: ksj
  * date:2017-10-10   15:20
  */
-function curl($url,array $array ,$type = 'post') {
+function curl($url,array $array=array() ,$type = 'get') {
     $ch = curl_init();
     if($type == 'get'){
-        if(is_array($array)) {
+        if(is_array($array) && is_null($array)) {
             $query = http_build_query($array);
             $url = $url . '?' . $query;
         }
@@ -160,4 +160,20 @@ function download($filepath){
     header('content-disposition:attachment;filename='.basename($filepath));
     header('content-length:'.filesize($filepath));
     readfile($filepath);
+}
+
+/**
+ * use for:文件写入
+ * @param $path
+ * @param $str
+ * @return bool
+ * user: ksj
+ * date:2017-10-11 20:47
+ */
+function saveFile($path,$str){
+    $file_hand = fopen($path,'ab');
+    if($file_hand) return false;
+    if(!is_writable($path)) return false;
+    if(fwrite($file_hand,$str) && fclose($file_hand)) return true;
+    return false;
 }
