@@ -172,7 +172,7 @@ function download($filepath){
  */
 function saveFile($path,$str){
     $file_hand = fopen($path,'ab');
-    if($file_hand) return false;
+    if(!$file_hand) return false;
     if(!is_writable($path)) return false;
     if(fwrite($file_hand,$str) && fclose($file_hand)) return true;
     return false;
