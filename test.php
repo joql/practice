@@ -18,8 +18,8 @@ QRcode::png('http://b.kylinqi.cn');*/
 
 /*$xml = <<<XML
         <xml>
-          <appid><![CDATA[wx2421b1c4370ec43b]]></appid>
-          <attach><![CDATA[支付测试]]></attach>
+<appid><![CDATA[wx2421b1c4370ec43b]]></appid>
+          <attach><![CDATA[scenicpay_1_123_123_1]]></attach>
           <bank_type><![CDATA[CFT]]></bank_type>
           <fee_type><![CDATA[CNY]]></fee_type>
           <is_subscribe><![CDATA[Y]]></is_subscribe>
@@ -37,6 +37,15 @@ QRcode::png('http://b.kylinqi.cn');*/
           <transaction_id><![CDATA[1004400740201409030005092168]]></transaction_id>
         </xml>
 XML;
+$pay = array(
+    'body'=>'景区门票',
+    'total_free'=>'123',
+    'out_trade_no'=>'213',
+    'attach'=>'scenicpay_1_123_123_1'
+);
+$res = curl('http://pay.cn/mobile.php/Home/Notify/scenicpay',$xml,'post');
+//$res = postCurl($xml,'http://pay.cn/notify.php');
+echo $res;
+//var_dump(xmlToArray($xml));
+//download('./init.php');*/
 
-var_dump(xmlToArray($xml));*/
-//download('./init.php');

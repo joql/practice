@@ -15,7 +15,7 @@
  * auth: ksj
  * date:2017-10-10   15:20
  */
-function curl($url,array $array ,$type = 'post') {
+function curl($url,$array ,$type = 'post') {
     $ch = curl_init();
     if($type == 'get'){
         if(is_array($array)) {
@@ -44,47 +44,14 @@ function curl($url,array $array ,$type = 'post') {
     }
 }
 
-/**
- * TODO: CURL模拟POST提交
- * @description PHP模拟网页post提交
- * @author AriFe.Liu
- * @time 2017年3月21日10:21:08
- * @param data 要发送的数据，可以为xml或数组
- * @param url  String 请求地址
- * @param is_xml Bool 是否是xml数据(xml数据需要设定特定的包头信息，所以如果提交xml数据，需要将此参数设为true)
- * @param second Int 等待超时时间，默认30s
- * @return 远端返回的响应信息
- * */
-function postCurl($url, $data, $is_xml=false, $second=30){
+function postCurl($data, $url){
     $ch = curl_init();
-    //设置超时
-    curl_setopt($ch, CURLOPT_TIMEOUT, $second);
-
-    curl_setopt($ch,CURLOPT_URL, $url);
-    curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,FALSE);
-    curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,FALSE);//严格校验
-    //设置header
-    curl_setopt($ch, CURLOPT_HEADER, FALSE);
-    //要求结果为字符串且输出到屏幕上
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    if($is_xml){
-        $header[] = "Content-type: text/xml";        //定义content-type为xml,注意是数组
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-    }
-    //post提交方式
-    curl_setopt($ch, CURLOPT_POST, TRUE);
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    //运行curl
-    $data = curl_exec($ch);
-    //返回结果
-    if($data){
-        curl_close($ch);
-        return $data;
-    } else {
-        $error = curl_errno($ch);
-        curl_close($ch);
-        return "CURL_ERROR";
-    }
+    $output = curl_exec($ch);
+    curl_close($ch);
 }
 
 /**
