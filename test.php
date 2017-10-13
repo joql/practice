@@ -48,4 +48,4 @@ $res = curl('http://pay.cn/mobile.php/Home/Notify/scenicpay',$xml,'post');
 echo $res;
 //var_dump(xmlToArray($xml));
 //download('./init.php');*/
-
+returnAjax(1,'success');

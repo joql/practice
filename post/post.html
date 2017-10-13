@@ -5,7 +5,7 @@
     <title>post</title>
 
     <style>
-        div{text-align: center;left: 0px}
+        div#div_request{text-align: center;left: 0px}
         .group{margin-top: 10px}
     </style>
     <style type='text/css'>
@@ -65,8 +65,9 @@
                         var str = data.message;
                         $('#div_response').empty();
                         if(isJSON(str)) {
+                            str = JSON.parse(str);
                             str = JSON.stringify(str, undefined, 2);
-                            str ='<pre>'+str+'</pre>';
+                            str ='<pre>'+highLight(str)+'</pre>';
                         }
                         $('#div_response').append(str);
                     }
