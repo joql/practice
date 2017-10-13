@@ -39,8 +39,7 @@ function curl($url,array $array=array() ,$type = 'get') {
     if(intval($status["http_code"]) == 200) {
         return $content;
     } else {
-        echo $status["http_code"];
-        return false;
+        return $status["http_code"];
     }
 }
 
