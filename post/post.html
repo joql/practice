@@ -8,6 +8,14 @@
         div{text-align: center;left: 0px}
         .group{margin-top: 10px}
     </style>
+    <style type='text/css'>
+        pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+        .string { color: green; }
+        .number { color: darkorange; }
+        .boolean { color: blue; }
+        .null { color: magenta; }
+        .key { color: red; }
+    </style>
 </head>
 <body>
     <span>提交数据部分</span>
@@ -34,6 +42,7 @@
 
     </div>
     <script type="text/javascript" src="../public/js/jquery.min.js"></script>
+    <script type="text/javascript" src="../public/js/common.js"></script>
     <script type="text/javascript">
         $('#btn_add').click(function () {
             var str ='';
@@ -53,8 +62,13 @@
                 dataType:"json",
                 success:function(data){
                     if(data.code == 1){
+                        var str = data.message;
                         $('#div_response').empty();
-                        $('#div_response').append(data.message);
+                        if(isJSON(str)) {
+                            str = JSON.stringify(str, undefined, 2);
+                            str ='<pre>'+str+'</pre>';
+                        }
+                        $('#div_response').append(str);
                     }
                 },
                 error:function(xmlHttpRequest,textStatus,errorThrown){
