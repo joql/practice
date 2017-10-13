@@ -12,5 +12,5 @@ $data = array();
 foreach ($post['key'] as $k=>$v){
     $data[$v] = $post['val'][$k];
 }
-$res = curl($post['url'],$data);
+$res = curl($post['url'],$data,'post');
 returnAjax(1,$res);
