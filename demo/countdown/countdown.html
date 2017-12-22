@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>demo-倒计时</title>
+</head>
+<body>
+
+    <div class="time" id="div_time">
+        <i id="time1" class="time__item_1">0</i>
+        <i id="time2" class="time__item_2">0</i>:
+        <i id="time3" class="time__item_3">0</i>
+        <i id="time4" class="time__item_4">0</i>:
+        <i id="time5" class="time__item_5">0</i>
+        <i id="time6" class="time__item_6">0</i>
+    </div>
+</body>
+<script src="/public/js/jquery.min.js"></script>
+<script>
+    var g_nowMinSec = new Date().valueOf();
+    setInterval(function() {
+        var now = new Date(g_nowMinSec);
+        var hours = now.getHours();
+        var rest_hours = 24 - hours - 1;
+        var rest_minutes = 59 - now.getMinutes();
+        var rest_seconds = 60 - now.getSeconds();
+        if (rest_seconds >= 60) {
+            rest_seconds -= 60;
+            rest_minutes += 1
+        }
+        if (rest_minutes >= 60) {
+            rest_minutes -= 60;
+            rest_hours += 1
+        }
+        var obj = document.getElementById('div_time');
+        if (!!obj) {
+            $('#time1').html("" + parseInt(rest_hours / 10));
+            $('#time2').html("" + parseInt(rest_hours % 10));
+            $('#time3').html("" + parseInt(rest_minutes / 10));
+            $('#time4').html("" + parseInt(rest_minutes % 10));
+            $('#time5').html("" + parseInt(rest_seconds / 10));
+            $('#time6').html("" + parseInt(rest_seconds % 10));
+        }
+        g_nowMinSec += 1000;
+    }, 1000);
+</script>
+</html>
