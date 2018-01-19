@@ -8,4 +8,6 @@
 - js-run js进度条
 - turnplate 转盘
 - gd
+- upload 文件上传
+    - webupload demo
 
