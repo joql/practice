@@ -3,6 +3,8 @@
 	<head>
 		<meta charset="utf-8">
 		<title>WebUploader</title>
+		<link rel="stylesheet" href="/public/asset/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/public/asset/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css" />
 		<link rel="stylesheet" href="webuploader.css" />
 		<style type="text/css">
 			.itemDel, .itemStop, .itemUpload{
@@ -28,7 +30,7 @@
 			<h1><a href="https://github.com/kazaff/webuploaderDemo">demo 地址</a></h1>
 		</div>
 		<div id="uploader">
-			<ul id="theList"></ul>
+			<ul id="theList" class="uploader-list"></ul>
 			<div id="picker">选择文件</div>
 		</div>
 		
@@ -200,8 +202,8 @@
 			uploader.on("fileQueued", function(file){
 				
 				$("#theList").append('<li id="'+file.id+'">' +
-					'<img /><span>'+file.name+'</span><span class="itemUpload">上传</span><span class="itemStop">暂停</span><span class="itemDel">删除</span>' +
-					'<div class="percentage"></div>' +
+					'<img /><span>'+file.name+'</span><span class="itemUpload">上传</span><span class="itemStop">暂停</span><span class="itemDel">删除</span>'+
+					 '<div class="complete"></div>'+
 				'</li>');
 				
 				var $img = $("#" + file.id).find("img");
@@ -240,13 +242,26 @@
 			});
 			
 			uploader.on("uploadProgress", function(file, percentage){
-				$("#" + file.id + " .percentage").text(percentage * 100 + "%");
+                var $li = $( '#'+file.id ),
+                    $percent = $li.find('.progress .progress-bar');
+
+                // 避免重复创建
+                if ( !$percent.length ) {
+                    $percent = $('<div class="progress progress-striped active" style="width: 90%;">' +
+                        '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+                        '</div>' +
+                        '<div class="percentage"></div></div>').appendTo( $li ).find('.progress-bar');
+                }
+
+                $li.find('p.state').text('上传中');
+                $percent.css( 'width', percentage * 100 + '%' );
+				$("#" + file.id + " .percentage").text(percentage.toFixed(2) * 100 + "%");
 			});
 
             function UploadComlate(file){
                 console.log(file);
 
-                $("#" + file.id + " .percentage").text("上传完毕");
+                $("#" + file.id + " .complete").text("上传完毕");
                 $(".itemStop").hide();
                 $(".itemUpload").hide();
                 $(".itemDel").hide();
