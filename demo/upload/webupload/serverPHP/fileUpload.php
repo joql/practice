@@ -13,7 +13,7 @@ class FileUpload{
 
     //要配置的内容
     private $path = "../uploads";
-    private $allowtype = array('jpg', 'gif', 'png', 'mp4', 'mp3');
+    private $allowtype = array('jpg', 'gif', 'png', 'mp4', 'mp3','rar');
     private $maxsize = 99999999999;
     private $israndname = true;
 
@@ -344,5 +344,5 @@ if(isset($_POST['status'])){
 if(($path = $uploader->upload('file', $_POST)) !== false){
     die('{"status":1, "path": "'.$path.'"}');
 }
-die('{"status":0}');
+die('{"status":0,"msg":'.$uploader->getError().'}');
 
