@@ -194,9 +194,9 @@ uploader.on("fileQueued", function(file){
     $html += '<p class="easy_upload_fiesize">' + F.formatFileSize(file.size) +'</p>';
     $html += '<p class="easy_upload_percent">0%</p>';
     $html += '</div>';
-    /*$html += '<div class="easy_upload_status queue_item-section">';
-     $html += file.allow ? sHtml : '<p class="status status6">文件不允许</p>';
-     $html += '</div>';*/
+    $html += '<div class="easy_upload_status queue_item-section">';
+    $html += '<p class="status status6"></p>';
+    $html += '</div>';
     $html += '<div class="easy_upload_btn queue_item-section">';
     $html += '<p class="easy_upload_upbtn btn noselect itemUpload">上传</p>';
     $html += '<p class="easy_upload_upbtn btn noselect itemStop">暂停</p>';
@@ -216,6 +216,11 @@ uploader.on("fileQueued", function(file){
         $img.attr("src", src);
     });
 
+});
+
+uploader.on( 'uploadError', function( file ,reason ) {
+    $( '#'+file.id ).find('p.status').text('上传出错');
+    $( '#'+file.id ).find('.easy_upload_bar').css('background','red');
 });
 
 $("#theList").on("click", ".itemUpload", function(){
@@ -251,8 +256,8 @@ function UploadComlate(file){
 
     $("#" + file.id + " .complete").text("上传完毕");
     $(".itemStop").hide();
-    $(".itemUpload").hide();
-    $(".itemDel").hide();
+    //$(".itemUpload").hide();
+    //$(".itemDel").hide();
 }
 
 //**************

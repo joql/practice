@@ -341,8 +341,8 @@ if(isset($_POST['status'])){
     }
 }
 
-if(($path = $uploader->upload('file', $_POST)) !== false){
-    die('{"status":1, "path": "'.$path.'"}');
+if(($filename = $uploader->upload('file', $_POST)) !== false){
+    die('{"status":1, "path": "'.$filename.'"}');
 }
 die('{"status":0,"msg":'.$uploader->getError().'}');
 
