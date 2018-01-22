@@ -7,6 +7,7 @@
         }
     ],
     "require": {
-        "monolog/monolog": "^1.23"
+        "monolog/monolog": "^1.23",
+        "php-ffmpeg/php-ffmpeg": "^0.11.0"
     }
 }

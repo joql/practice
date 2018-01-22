@@ -10,4 +10,5 @@
 - gd
 - upload 文件上传
     - webupload demo
+- ffmpeg
 
