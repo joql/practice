@@ -12,7 +12,12 @@
 var_dump($input);*/
 require '../../init.php';
 set_time_limit(0);
-$ffmpeg = FFMpeg\FFMpeg::create();
+$ffmpeg = FFMpeg\FFMpeg::create(array(
+    'ffmpeg.binaries'  => '/usr/bin/ffmpeg',
+    'ffprobe.binaries' => '/usr/bin/ffprobe',
+    'timeout'          => 3600, // The timeout for the underlying process
+    'ffmpeg.threads'   => 12,   // The number of threads that FFMpeg should use
+));
 $video  = $ffmpeg->open('b1.mov');
 
 $video
