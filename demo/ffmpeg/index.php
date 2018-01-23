@@ -8,9 +8,9 @@
 
 //1.安装ffmpeg
 //2.设置path变量
-/*echo exec('D:\tool\ffmpeg\bin\ffmpeg.exe -i b1.mov b1.mp4',$input);
-var_dump($input);*/
-require '../../init.php';
+echo exec('/usr/bin/ffmpeg -i b1.mov b1.mp4',$input);
+var_dump($input);
+/*require '../../init.php';
 set_time_limit(0);
 $ffmpeg = FFMpeg\FFMpeg::create(array(
     'ffmpeg.binaries'  => '/usr/bin/ffmpeg',
@@ -28,4 +28,4 @@ $video
     ->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(10))
     ->save('frame.jpg');
 $video
-    ->save(new FFMpeg\Format\Video\X264(), 'exp.mp4');
+    ->save(new FFMpeg\Format\Video\X264(), 'exp.mp4');*/
