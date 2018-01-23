@@ -6,9 +6,12 @@
  * Time: 15:55
  */
 
+//1.安装ffmpeg
+//2.设置path变量
+/*echo exec('D:\tool\ffmpeg\bin\ffmpeg.exe -i b1.mov b1.mp4',$input);
+var_dump($input);*/
 require '../../init.php';
-
-
+set_time_limit(0);
 $ffmpeg = FFMpeg\FFMpeg::create();
 $video  = $ffmpeg->open('b1.mov');
 
@@ -20,6 +23,4 @@ $video
     ->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(10))
     ->save('frame.jpg');
 $video
-    ->save(new FFMpeg\Format\Video\X264(), 'export-x264.mp4')
-    ->save(new FFMpeg\Format\Video\WMV(), 'export-wmv.wmv')
-    ->save(new FFMpeg\Format\Video\WebM(), 'export-webm.webm');
+    ->save(new FFMpeg\Format\Video\X264(), 'exp.mp4');
