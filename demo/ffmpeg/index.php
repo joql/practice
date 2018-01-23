@@ -8,7 +8,7 @@
 
 //1.安装ffmpeg
 //2.设置path变量
-echo exec('/usr/bin/ffmpeg -i b1.mov b1.mp4',$input);
+echo exec('D:\tool\ffmpeg\bin\ffmpeg.exe -i b1.mov b1.mp4',$input);
 var_dump($input);
 /*require '../../init.php';
 set_time_limit(0);
