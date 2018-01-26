@@ -12,4 +12,5 @@
     - webupload demo
 - ffmpeg
 - php-encryption php加解密
+- php-resque 队列
 
