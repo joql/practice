@@ -7,16 +7,20 @@
  */
 
 //hash=lKoKHZmu&act=test
-$str = 'hash=lKoKHZmu&act=test';
+$str = 'hash=lKoKHZmu&act=getAccessToken';
 
 echo '明文：'.$str;
 echo '<br />';
 
 $w = authcode($str,'ENCODE','nygzh');
+//$w ='0bbbsjzaM1+QCNUrmpHXtTH3P+VGspybCcq0wbM9VubXhiO/e/mfMnP6tgH9twMXjx1l';
 echo '加密后：'.$w;
+echo '<br />';
+echo '加密后(url编码后)：'.urlencode($w);
 echo '<br />';
 echo '解密后：'.authcode($w,'DECODE','nygzh');
 echo '<br />';
+echo '请求格式：?code='.urlencode($w);
 
 
 /**
