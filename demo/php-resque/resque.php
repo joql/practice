@@ -20,3 +20,6 @@ if(empty($QUEUE)){
 }
 
 Resque::setBackend('127.0.0.1:6379');
+$queues = explode(',',$QUEUE);
+$worker = new Resque_Worker($queues);
+$worker->work(5);

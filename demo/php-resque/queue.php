@@ -6,8 +6,9 @@
  * Time: 15:30
  */
 
+require_once dirname(__FILE__).'/../../vendor/chrisboulton/php-resque/lib/Resque.php';
 
-Queue:: in('push','PHP_Job',['push'=>'123']);
+//Queue:: in('push','PHP_Job',['push'=>'123']);
 
 class Queue
 {
@@ -29,3 +30,4 @@ class Queue
         return $jobId;
     }
 }
+
