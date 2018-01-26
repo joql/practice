@@ -7,4 +7,16 @@
  */
 require_once 'queue.php';
 
-Queue:: in('push','PHP_Job',['push'=>'123']);
+$test = new test();
+Queue:: in('push','PHP_Job',['push'=>$test]);
+
+class test
+{
+    public $a;
+    public $b;
+    function test(){
+        $a =1;
+        $b = 2;
+        return $a.$b;
+    }
+}

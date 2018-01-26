@@ -19,7 +19,7 @@ class PHP_Job
         $log->pushHandler(new StreamHandler('your.log', Logger::WARNING));
 
         // add records to the log
-        $log->warning('push: '.$push);
+        $log->warning('push: '.$push->test());
         echo $push;
     }
 }
