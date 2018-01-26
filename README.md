@@ -13,4 +13,5 @@
 - ffmpeg
 - php-encryption php加解密
 - php-resque 队列
+- qrcode js生成二维码
 
