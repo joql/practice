@@ -1,0 +1,11 @@
+nohup: ignoring input
+nohup: failed to run command `resque.sh': No such file or directory
+nohup: ignoring input
+nohup: failed to run command `resque.sh': No such file or directory
+nohup: ignoring input
+nohup: failed to run command `./resque.sh': Permission denied
+nohup: ignoring input
+./resque.sh: line 11: 24556 Killed                  QUEUE=* nohup php ${PREFIX}/resque.php >> ${PREFIX}/resque.log 2>&1
+NEW_PID:25224 2018-01-27 00:36:13
+./resque.sh: line 11: 25224 Killed                  QUEUE=* nohup php ${PREFIX}/resque.php >> ${PREFIX}/resque.log 2>&1
+NEW_PID:25269 2018-01-27 00:36:31
