@@ -15,4 +15,6 @@
 - php-resque 队列
 - qrcode js生成二维码
 - monolog 日志记录
+- swoole
+    - websocket 通信
 
