@@ -6,6 +6,7 @@
  * Time: 10:38
  */
 
+//由于swoole多进程，用户变量信息不能共享，使用$server->connections 获取所有客户端句柄
 class Imsock
 {
     private $_user_list = array();
@@ -44,7 +45,7 @@ class Imsock
     private function _sendmsg(swoole_websocket_server $server, $frame)
     {
         $msg = "from {$frame->fd}: {$frame->data}\n";
-        foreach ($this->_user_list as $k=>$v){
+        foreach ($server->connections as $k){
             $server->push($k,$msg);
             echo "用户 {$k} 推送成功\n";
         }
