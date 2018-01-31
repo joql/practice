@@ -9,6 +9,7 @@
     "require": {
         "monolog/monolog": "^1.23",
         "php-ffmpeg/php-ffmpeg": "^0.11.0",
-        "chrisboulton/php-resque": "1.2.x"
+        "chrisboulton/php-resque": "1.2.x",
+        "riverslei/payment": "~4.0.0"
     }
 }
