@@ -7,6 +7,7 @@
  */
 
 //由于swoole多进程，用户变量信息不能共享，使用$server->connections 获取所有客户端句柄
+//防火墙导致连接失败
 
 require_once 'scan.php';
 
