@@ -72,7 +72,7 @@ class Imsock
         $scan->setPosrt($hosts[0],$hosts[1]);
         $result = json_encode($scan->checkPost());
         $server->push($frame->fd,$result);
-        echo "用户 ".$frame->fd." 推送 $result 成功";
+        echo "用户 ".$frame->fd." 推送 $result 成功\n";
         return true;
     }
 }

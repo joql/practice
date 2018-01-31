@@ -49,7 +49,7 @@
 
     websocket.onmessage = function (ev) {
         var html='';
-        var data= JSON.stringify(ev.data);
+        var data= JSON.parse(ev.data);
         html = '<tr>' +
                     '<th>'+data.host+'</th>' +
                     '<th>'+data.port+'</th>' +
