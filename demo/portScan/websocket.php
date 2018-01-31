@@ -69,9 +69,9 @@ class Imsock
         $hosts = explode(':',$frame->data);
         $scan = new Scan();
         $scan->setPosrt($hosts[0],$hosts[1]);
-        $result = $scan->checkPost();
+        $result = json_encode($scan->checkPost());
         $server->push($frame->fd,$result);
-        echo "用户 ".$frame->fd." 推送".implode(',',$result)." 成功";
+        echo "用户 ".$frame->fd." 推送 $result 成功";
         return true;
     }
 }
