@@ -9,12 +9,8 @@
 //error_reporting(0);
 //开启php_sockets 扩展
 
-set_time_limit(0);
+//set_time_limit(0);
 
-$scan = new Scan();
-$scan->setPosrt('39.107.118.201',11);
-$result = $scan->checkPost();
-var_dump($result);
 
 class Scan
 {

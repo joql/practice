@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>postScan</title>
+    <link rel="stylesheet" href="/public/asset/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <style>
+        .result-box{
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="col-lg-9">
+    <h2>在线检测ip的端口是否开放</h2>
+    <div class="post-box  col-lg-7">
+            <div class="form-group">
+                <label>host:</label>
+                <input type="text" class="form-control" name="host" id="inputHost" placeholder="请输入ip地址">
+            </div>
+            <div class="form-group">
+                <label>port:</label>
+                <textarea type="text" class="form-control" name="port" id="inputPort"></textarea>
+            </div>
+            <button type="submit" class="btn btn-default" id="btnScan">Submit</button>
+    </div>
+    <div class="table-responsive col-lg-7 result-box">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>host</th>
+                    <th>post</th>
+                    <th>state</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+</body>
+<script src="/public/js/jquery.min.js"></script>
+<script>
+    var webServer = 'ws://192.168.19.128:9502';
+    var websocket = new WebSocket(webServer);
+
+    websocket.onmessage = function (ev) {
+        /*var html='';
+        var data= ev.data;
+        html = '<tr>' +
+                    '<th>'+data.host+'</th>' +
+                    '<th>'+data.port+'</th>' +
+                    '<th>'+data.state+'</th>' +
+                '</tr>';
+        $('.result-box tbody').append(html);*/
+    }
+    $(function () {
+        $('#btnScan').click(function () {
+            var host = $('#inputHost').val();
+            var port_str = $('#inputPort').val();
+            if(!isValidIP(host)){
+                alert('请输入正确的ip地址');
+                return;
+            }
+            //组合ports
+            var tmp=[],port_arr = port_str.split(','),tmp_area;
+            port_arr.forEach(function (value) {
+                //检测定义范围
+                if(value.indexOf('-') != -1){
+                    tmp_area = value.split('-');
+                    if(isNumber(parseInt(tmp_area[0])) && isNumber(parseInt(tmp_area[1]))){
+                        for (var j=parseInt(tmp_area[0]);j<=parseInt(tmp_area[1]);j++){
+                            tmp.push(j);
+                        }
+                    }
+                }else{
+                    tmp.push(parseInt(value));
+                }
+            });
+            tmp = tmp.unique();
+            console.log(tmp);
+            tmp.forEach(function (value) {
+                var str = host+':'+value;
+                websocket.send(str);
+            })
+
+        });
+    });
+
+    //ip合法性检测
+    function isValidIP(ip)
+    {
+        var reg =  /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+        return reg.test(ip);
+    }
+    //
+    function isNumber(obj) {
+        return typeof obj === 'number' && isFinite(obj)
+    }
+
+    //数组去重
+    Array.prototype.unique = function(){
+        var json = {}, newArr = [], len = this.length;
+        for(var i = 0; i < len; i++){
+            var temp = Object.prototype.toString.call(this[i]);
+            if(typeof json[this[i]] == "undefined"){
+                json[this[i]] = {};
+                json[this[i]][temp] = 1;
+                newArr.push(this[i]);
+            }else if(typeof json[this[i]][temp] == "undefined"){
+                json[this[i]][temp] = 1;
+                newArr.push(this[i]);
+            }else{
+                json[this[i]][temp]++;
+            }
+        }
+        //console.log(json);
+        return newArr;
+    }
+</script>
+</html>
