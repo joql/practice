@@ -48,14 +48,14 @@
     var websocket = new WebSocket(webServer);
 
     websocket.onmessage = function (ev) {
-        /*var html='';
+        var html='';
         var data= ev.data;
         html = '<tr>' +
                     '<th>'+data.host+'</th>' +
                     '<th>'+data.port+'</th>' +
-                    '<th>'+data.state+'</th>' +
+                    '<th>'+data.msg+'</th>' +
                 '</tr>';
-        $('.result-box tbody').append(html);*/
+        $('.result-box tbody').append(html);
     }
     $(function () {
         $('#btnScan').click(function () {

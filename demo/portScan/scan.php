@@ -35,16 +35,16 @@ class Scan
         $f= array($sock);
         switch (socket_select($r, $w, $f,5)){
             case 0:
-                return ['code'=>0,'msg'=>'超时'];
+                return ['code'=>0,'msg'=>'超时','host'=>$this->host,'port'=>$this->port];
                 break;
             case 1:
-                return ['code'=>1,'msg'=>'打开'];
+                return ['code'=>1,'msg'=>'打开','host'=>$this->host,'port'=>$this->port];
                 break;
             case 2:
-                return ['code'=>0,'msg'=>'关闭'];
+                return ['code'=>0,'msg'=>'关闭','host'=>$this->host,'port'=>$this->port];
                 break;
             default:
-                return ['code'=>0,'msg'=>'未知错误'];
+                return ['code'=>0,'msg'=>'未知错误','host'=>$this->host,'port'=>$this->port];
         }
     }
 }
