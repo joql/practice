@@ -30,7 +30,10 @@ class Scan
         socket_set_nonblock($sock);
         socket_connect($sock,$this->host,$this->port);
         socket_set_block($sock);
-        switch (socket_select($r = array($sock), $w=array($sock), $f= array($sock),5)){
+        $r = array($sock);
+        $w=array($sock);
+        $f= array($sock);
+        switch (socket_select($r, $w, $f,5)){
             case 0:
                 return ['code'=>0,'msg'=>'超时'];
                 break;
