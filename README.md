@@ -17,5 +17,5 @@
 - monolog 日志记录
 - swoole
     - websocket 通信
-- portScan 端口扫描    
+- portScan 端口扫描采用websocket通信    
 
