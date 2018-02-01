@@ -27,6 +27,8 @@ class Scan
     }
     public function checkPost(){
         $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+        socket_set_option($sock,SOL_SOCKET,SO_RCVTIMEO,array("sec"=>1, "usec"=>0 ) );
+        socket_set_option($sock,SOL_SOCKET,SO_SNDTIMEO,array("sec"=>3, "usec"=>0 ) );
         socket_set_nonblock($sock);
         socket_connect($sock,$this->host,$this->port);
         socket_set_block($sock);
