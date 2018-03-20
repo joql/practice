@@ -19,4 +19,5 @@
 - ipa分析
 - redbag 红包算法
 - bouncing balls    js弹跳球
+- select bootstrap-select demo
 

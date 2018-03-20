@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>select</title>
+    <link rel="stylesheet" href="http://www.jq22.com/jquery/bootstrap-3.3.4.css">
+    <link href="bootstrap-select.min.css" rel="stylesheet" />
+    <script src="http://www.jq22.com/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="bootstrap.min.js"></script>
+    <script type="text/javascript" src="bootstrap-select.min.js"></script>
+    <style>
+        span{color: red;}
+    </style>
+</head>
+<body>
+    <span>bootstrap-3.3.4.css 需要外部引入，负责图标显示异常</span>
+    <h3>可多选类，无限制</h3>
+    <select class="selectpicker" multiple title="选择助理">
+        <option value="mustard">Mustard</option>
+        <option>Ketchup</option>
+        <option value="relish">Relish</option>
+    </select>
+</body>
+<script>
+    $('.selectpicker').selectpicker('val',['mustard','relish']);
+    // 缺一不可
+    $('#name').selectpicker('refresh');
+    $('#name').selectpicker('render');
+</script>
+</html>
