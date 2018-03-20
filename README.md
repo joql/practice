@@ -20,4 +20,6 @@
 - redbag 红包算法
 - bouncing balls    js弹跳球
 - select bootstrap-select demo
+- orc  验证码识别学习 参考 [例子1](https://segmentfault.com/a/1190000008729322) [例子2](https://segmentfault.com/a/1190000004361370)
+
 
