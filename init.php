@@ -6,7 +6,7 @@
  * Time: 21:49
  */
 
-error_reporting(E_ALL);
+error_reporting( E_ALL&~E_NOTICE );
 define('ROOT',dirname(__FILE__));
 define('LIB_ROOT',dirname(__FILE__).'/lib/');
 

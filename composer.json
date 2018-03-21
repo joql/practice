@@ -10,6 +10,7 @@
         "monolog/monolog": "^1.23",
         "php-ffmpeg/php-ffmpeg": "^0.11.0",
         "chrisboulton/php-resque": "1.2.x",
-        "houdunwang/zip": "^1.0"
+        "houdunwang/zip": "^1.0",
+        "guzzlehttp/guzzle": "~6.0"
     }
 }

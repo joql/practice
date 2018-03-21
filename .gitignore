@@ -1,2 +1,5 @@
 demo/upload/webupload/uploads/
 /vendor/
+
+
+/public/img/ocr/*.png

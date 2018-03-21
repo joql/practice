@@ -6,14 +6,17 @@
  * Time: 17:24
  */
 
+//验证码识别类
+//$data = 'data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAAWCAYAAABg3tToAAAEQUlEQVRYw+2Xa1BUZRjHf4c9Liyrqx90BaYhJUxLXcQugjBGXGS5CIJG6nQzGy80eUkxTRoKCSbHWzWjDaYyEVZqcmvboXEUF5abQVBYaqaAXAIBZxDdARfsQ9OxIzSe7UszxvPtfc5z/v/3N+/7vO85wpP+oXd4wMKJBzBGoEag/sMQ71eg041hlCjS1X192OcJi2NZ8lwcev0EGhqbOHAomzOWsiEaG9auJnDuHAYHBymxVpCxYy8DA4O8tWkti+MXDNEtNBWR+v5OxR4OQS19Pp7YaCNRC5dx5478oIyJNrJxfSKZn35G/c/nCQ4KZEd6CisTN1L3Yz0AKpUTH+/JQKVSsT19FyqVCk/PhxgYGATg8yPHMBedlDTVajUf7U6nsalZsYdDUKIoEh8bRV6BeQgQQFREGBWV33MwKweAyqpq5vo9hXF+sGQYHRnOFG8vYha9SGdn1xCNltY2WlrbpHFEeAiC4MQ3piLFHg71VHjYs+h0Oo6dKBj+ZSeB/v7bslxf/23sdrs0jjSGUmKtGBZouFgUtwBreaW03ZV4OAS1JCGOYov1Hyd0qriUwAA/oiPnIwgC8wL9magfT17Bt1LN9MencflKI1s3r6P0tIlTRbksf3npsHqTJ3niY5hObp7JIQ/F28/HMINpU6ewc88+ANJTt3Hbbicl9QOp5ouvTuA1+WFSkpNIXLUcnU7H+k3b+O1yAwCjR2txdlazMCYSa1klb2zYwuxZBhJXvUpLSxvfnSyWecYvjKa94xplFWcVezi0UksS4rhw8ZK0b11cXIbUBPg/TdC8ANIydpOV/SVd3d1kbE9m6qPeALhqNABUna0hLWM3P9T+xMGsHOrPnScm2ijTUqtHERURRqGpSNa/9/NQDKWfMJ6geQHk5psQRRFRFNFqXXESBETxz8XVurqSlvo2J/JM5BeaOXo8n4Rlr3Gts4uU5CQAbtlsANTWyRv6SkMjHu5uslxYSBBarSt5BWYpp8RDMZSvrwFRVLElaR3lFjPlFjOzfQ0Yw0Mot5gRRRFvby9Ga7XU/u0E6uvro/iMlSneXjg7O9Pbe5MbN3pxm6iX6Ws0Ggn4r4iLjaLqbA3t7R1STomH4p6yllXywitrZLl339nM7+0dfJKZhd1up6enBwAP94nyVdaP59YtG/39/QBU19ThN+cJ9mceBkAQBGbOeAxLyd3L8xGvSfgYprN563syLaUeiqB6e29y4eIlWc5ms9HTc0PKX2loorKqmjUrlyMITjRdbcZ31kwWRIVz8HCO1BfZR45yYP8ekre+yeniUiKMoYzVjSE759jdu8kYSnf3dSylZfdsU2Ue94ag9H/qUOaHXG1ulZ1+Go0Lr69eQXBQIOPGjeVqcytf5xZy9Hi+7N3QkGdYteIl3N3d+PXSZXbt3Uf9uV/uTkIQ8HB3k13Cjnr8K6iRr/QRqBGo/y/UH1fM+kQoiGILAAAAAElFTkSuQmCC';
 
 
 
-$ocr = new Ocr();
-$data = 'data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAWCAYAAACCAs+RAAAEEElEQVRYw+2XeVCUdRjHP9LKrGyscsWAIWgZhAg4HLpgqKOGAo0c4xHKpBI1OggkgswaSs5EeJJpaMUQgYGggVlESqWBhEE6cV8eRXgAC84sLJuwQH80bawLI8vkP8b3v+ec+Ty/93l/7zvJVbJsiCdAejwhmgCZAHlMEowWyMtJx8pquobv5q3fWbv+dQ2fWGzIZIGAzq77I/YxMppGwtsxeEjcWRMcyq3fWgDw83mZ4HVB2Fhb0SHr5FRuPtk5eeq6hZ7zCdscwnOzZtIhk5FxMpf8Lwt0BwE4X3SR3DNn1XZ3d49WzqtrA1nltwJf/2CGhjRfgPPdXUiIj8XYaJqG/0W7F4ja9iYZJ3NobL6Bm+s8tkduQS7vpqCwCK+FEg4kJZCVk8eHJ9KQLHBDujMKhULBhe8u6Q7S3t5BVXXd6FMQCAhc5cvZc4VaEI5z7fngcCLFJWWUlF4hXhqtjtU3NLEqKARFby8AP5dfxc3FmWVLF1FQWMSV8l+Ilb7Dj8U/AVBecQ03F2cC/H3HB/IoeS9fglgs5nTeOa1YVXUdMXEJFF8uw1PirhX/B0K9rHp6KHuVAPT19ash/h2qDAsL88ez7OvWBHCpuBSZrHPEePHlskf2EBkYsHa1PzbWVmQN25GHNXPmDFpb74xvR7xe8sB35XJEIhG/VlbzblIyd++1AeDk6ICd7WwOJqcAkLh3F/0qFXv27hvzIFxdnDl+9AAPHvRx6P0UamrrR817drolx1JSdQf56pvzDKgGqKyuw/wZUyLC32D/e3sI2bRVfRqNTdeprKoBQCgU0t/To9OJNjQ2syksgjn2tkRHbcXwaREZn+dq5OjrT2Zn9DYqq2r5/mKJ7iCffpatYQuFQuKl0VhbW6HsVbLYy5ODyccQCP5uIRIZoFAoEAgEqFSqMYH09Cioqa2nprYeG+sZhIWGaIHEbA/HxMSYiO3S8d0jD+teWzsAZqYmmJgYIxA8RVxMJHExkRp5K7yXIvFaOWaY4f2FQiFisSFyeTcAQQF++Pl4ExktVT/SOoNMmSJEqfxTbc+xt2VwcJCWllYaGpvZsHGLRn5CfCz32to58XH6IyH09SdjZmrK7Tt31T4Hezu6uu6rIVzmObHjrXD2HzpKecW18d3snhJ3du/aQWbWaZqv32T287PY/Fow3174gfYOGQCNTdc1apRKJXJ5t5Z/JIVu3ECgvy8fpWbQ8kcrkgVuLF7kyeEjxwGYbmnBvsTdlFdc5cbNWzjOtVfX1tY1MDAwODaQ0rJy0jNPERTwCpYW5nR2dnEy+wypaZn/yXfRJ2mZDA4NErJ+NWamJty+fZekA0f4Iv9rAJydHJg6VYyHxB2PYXeQSjXAwiU+I/acNPFjNQEyAfL/APkLjaiFzNcigzQAAAAASUVORK5CYII=';
+/*$ocr = new Ocr();
+$data = 'data:image/png;charset=utf-8;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAAWCAYAAABg3tToAAAEQUlEQVRYw+2Xa1BUZRjHf4c9Liyrqx90BaYhJUxLXcQugjBGXGS5CIJG6nQzGy80eUkxTRoKCSbHWzWjDaYyEVZqcmvboXEUF5abQVBYaqaAXAIBZxDdARfsQ9OxIzSe7UszxvPtfc5z/v/3N+/7vO85wpP+oXd4wMKJBzBGoEag/sMQ71eg041hlCjS1X192OcJi2NZ8lwcev0EGhqbOHAomzOWsiEaG9auJnDuHAYHBymxVpCxYy8DA4O8tWkti+MXDNEtNBWR+v5OxR4OQS19Pp7YaCNRC5dx5478oIyJNrJxfSKZn35G/c/nCQ4KZEd6CisTN1L3Yz0AKpUTH+/JQKVSsT19FyqVCk/PhxgYGATg8yPHMBedlDTVajUf7U6nsalZsYdDUKIoEh8bRV6BeQgQQFREGBWV33MwKweAyqpq5vo9hXF+sGQYHRnOFG8vYha9SGdn1xCNltY2WlrbpHFEeAiC4MQ3piLFHg71VHjYs+h0Oo6dKBj+ZSeB/v7bslxf/23sdrs0jjSGUmKtGBZouFgUtwBreaW03ZV4OAS1JCGOYov1Hyd0qriUwAA/oiPnIwgC8wL9magfT17Bt1LN9MencflKI1s3r6P0tIlTRbksf3npsHqTJ3niY5hObp7JIQ/F28/HMINpU6ewc88+ANJTt3Hbbicl9QOp5ouvTuA1+WFSkpNIXLUcnU7H+k3b+O1yAwCjR2txdlazMCYSa1klb2zYwuxZBhJXvUpLSxvfnSyWecYvjKa94xplFWcVezi0UksS4rhw8ZK0b11cXIbUBPg/TdC8ANIydpOV/SVd3d1kbE9m6qPeALhqNABUna0hLWM3P9T+xMGsHOrPnScm2ijTUqtHERURRqGpSNa/9/NQDKWfMJ6geQHk5psQRRFRFNFqXXESBETxz8XVurqSlvo2J/JM5BeaOXo8n4Rlr3Gts4uU5CQAbtlsANTWyRv6SkMjHu5uslxYSBBarSt5BWYpp8RDMZSvrwFRVLElaR3lFjPlFjOzfQ0Yw0Mot5gRRRFvby9Ga7XU/u0E6uvro/iMlSneXjg7O9Pbe5MbN3pxm6iX6Ws0Ggn4r4iLjaLqbA3t7R1STomH4p6yllXywitrZLl339nM7+0dfJKZhd1up6enBwAP94nyVdaP59YtG/39/QBU19ThN+cJ9mceBkAQBGbOeAxLyd3L8xGvSfgYprN563syLaUeiqB6e29y4eIlWc5ms9HTc0PKX2loorKqmjUrlyMITjRdbcZ31kwWRIVz8HCO1BfZR45yYP8ekre+yeniUiKMoYzVjSE759jdu8kYSnf3dSylZfdsU2Ue94ag9H/qUOaHXG1ulZ1+Go0Lr69eQXBQIOPGjeVqcytf5xZy9Hi+7N3QkGdYteIl3N3d+PXSZXbt3Uf9uV/uTkIQ8HB3k13Cjnr8K6iRr/QRqBGo/y/UH1fM+kQoiGILAAAAAElFTkSuQmCC';
 
 $ocr->init($ocr->savePicByBase54($data,'./','test.png'),[5,6,5,6,2]);
-$ocr->test();
+//$ocr->test();
+echo 'result: '.$ocr->recognition().'<br>';*/
 
 
 class Ocr
@@ -30,6 +33,18 @@ class Ocr
     private $fill_bottom;//下边距
     private $fill_right;//右边距
     private $fill_space;//字母间隔
+    private $feature = [
+                    '001110001001100100010100001110000011000001100000110000011000011010001001001100011100',
+                    '001100111011010000100001000010000100001000010000100001000010',
+                    '011100100010000011000011000011000010000110000100001000010000110000111111',
+                    '011100100010000011000010000010001100000010000001000001000011100010011100',
+                    '000000000010000010000001000001000000100000010010010001001111111000011000001000000100',
+                    '111111100000100000100000100000111110000011000001000001000001100010011100',
+                    '000110001100000100000100000010011001100010100001110000011000001110001001000100011100',
+                    '111110000100001000110001000010001000010001100010000100000000',
+                    '001110001000101100010110001001000100011100010011010000111000001100000111000100011100',
+                    '001110010011100001100001100001110001011101000001000010000110011000000000'
+                ];//特征码
 
 
     /**
@@ -52,8 +67,32 @@ class Ocr
         return false;
     }
 
+    /**
+     * use for:识别
+     * auth: Joql
+     * @return string
+     * date:2018-03-21 11:51
+     */
+    public function recognition(){
+        echo '<img src="'.$this->pic_path.'" /><br>';
 
-    public function recognition($path){
+        $start=$this->fill_left;
+        $result ='';
+        for ($i = 0;$i < count($this->pic_count);$i++){
+            $str = '';
+            for ($j = 0; $j < $this->pic_hid - $this->fill_top - $this->fill_bottom; $j++){
+                for ($k = $start;$k <= $this->pic_count[$i];$k++){
+                    if ($this->pic_rgb[$j+$this->fill_top][$k]['red'] <= $this->max_grey && $this->pic_rgb[$j+$this->fill_top][$k]['red'] >= $this->min_grey) {
+                        $str .= '0';
+                    } else {
+                        $str .= '1';
+                    }
+                }
+            }
+            $result .= $this->findsimilarKey($str,$this->feature);
+            $start = $this->pic_count[$i]+1+$this->fill_space;
+        }
+        return $result;
 
     }
 
@@ -117,6 +156,11 @@ class Ocr
     }
 
 
+    /**
+     * use for:测试
+     * auth: Joql
+     * date:2018-03-21 11:03
+     */
     public function test(){
 
         echo '<img src="'.$this->pic_path.'" /><br>';
@@ -151,15 +195,56 @@ class Ocr
             for ($j = 0; $j < $this->pic_hid - $this->fill_top - $this->fill_bottom; $j++){
                 for ($k = $start;$k <= $this->pic_count[$i];$k++){
                     if ($this->pic_rgb[$j+$this->fill_top][$k]['red'] <= $this->max_grey && $this->pic_rgb[$j+$this->fill_top][$k]['red'] >= $this->min_grey) {
-                        echo '□';
+                        echo '0';
                     } else {
-                        echo '■';
+                        echo '1';
                     }
                 }
-                echo "<br>";
+                //echo "<br>";
             }
             $start = $this->pic_count[$i]+1+$this->fill_space;
             echo "<br>";
         }
+    }
+
+    /**
+     * use for:统计字符串不同之处
+     * auth: Joql
+     * @param $str1
+     * @param $str2
+     * @return int
+     * date:2018-03-21 11:53
+     */
+    private function compareStr($str1,$str2){
+        $count = 0;
+        $arr1 = str_split($str1, 1);
+        $arr2 = str_split($str2, 1);
+        foreach ($arr1 as $k=>$v){
+            if($v != $arr2[$k]){
+                $count++;
+            }
+        }
+        return $count;
+    }
+
+    /**
+     * use for:返回相似特征码键值
+     * auth: Joql
+     * @param $str
+     * @param $arr
+     * @return string
+     * date:2018-03-21 13:27
+     */
+    private function findsimilarKey($str, $arr){
+        $min =100;
+        $back ='';
+        foreach ($arr as $k=>$v){
+            $count_diff = $this->compareStr($str, $v);
+            if($count_diff <= $min){
+                $min = $count_diff;
+                $back = $k;
+            }
+        }
+        return $back;
     }
 }
