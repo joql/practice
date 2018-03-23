@@ -13,3 +13,17 @@ define('LIB_ROOT',dirname(__FILE__).'/lib/');
 require LIB_ROOT.'common.php';
 require 'vendor/autoload.php';
 //require LIB_ROOT.'curl.class.php';
+
+
+//******连接数据库************
+$db  = new MysqliDb([
+    'host'      =>'localhost',
+    'username'  =>'root',
+    'password'  =>'admin001',
+    'db'        =>'practice',
+    'port'      =>3306,
+    'prefix'    =>'p_',
+    'charset'   =>'utf8'
+]);
+if(!$db) die("Database error");
+//*******   end **************
