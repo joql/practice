@@ -176,3 +176,21 @@ function saveFile($path,$str){
     if(fwrite($file_hand,$str) && fclose($file_hand)) return true;
     return false;
 }
+
+/**
+ * use for:合并2维数组
+ * auth: Joql
+ * @param $old
+ * @param $new
+ * @return mixed
+ * date:2018-03-14 23:23
+ */
+function arrayMergBy2($old,$new){
+    if(empty($old)) return $new;
+    foreach ($old as $k=>$v){
+        foreach ($new[$k] as $v){
+            array_push($old[$k],$v);
+        }
+    }
+    return $old;
+}

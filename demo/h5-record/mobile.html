@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>mobile record</title>
+</head>
+<body>
+    <form action="mobile.php" method="post" enctype="multipart/form-data">
+        <input type="file" accept="audio/*" capture="microphone" name="voice">
+        <input type="submit">提交
+    </form>
+    <audio src="33985.mp3" autoplay id="audio"></audio>
+</body>
+<script>
+    var audio = document.getElementById("audio");
+
+    //播放(继续播放)
+    audio.play();
+
+    //暂停
+    audio.pause();
+
+    //停止
+    audio.pause();
+    audio.currentTime = 0;
+
+    //重新播放
+    audio.currentTime = 0;
+    audio.play();
+</script>
+</html>

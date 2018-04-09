@@ -25,4 +25,5 @@
 - spider 爬虫
     - getName 抓取用户名
 - share 分享 qq qq空间 微博 微信
+- h5-record web 可录可听 android 可录可听  ios可听
 
