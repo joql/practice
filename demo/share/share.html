@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="style.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+    <div class="share-box open">
+        <div class="dropdown-menu action-item-content">
+            <i class="arrow-icon"></i>
+            <div class="nice-scroll" style="overflow: hidden; outline: none;" tabindex="1">
+                <div class="share-more clearfix">
+                    <div class="share-third-list">
+                        <h3 class="h3">呼唤小伙伴们前来围观吧</h3>
+                        <div class="s-more" data-share-btn="more">
+                            <ul class="trd-ullist clearfix">
+                                <li>
+                                    <a class="share-btn sm1 js-share-weibo-btn" href="" title="分享到新浪微博" target="_blank"></a>
+                                </li>
+                                <li>
+                                    <a class="share-btn sm4 js-share-qq-btn" href="" title="分享到QQ" target="_blank"></a>
+                                </li>
+                                <li>
+                                    <a class="share-btn sm3 js-share-qzone-btn" href="" title="分享到QQ空间" target="_blank"></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="wx-qcode">
+                        <div class="wxqrimgbg">
+                            <div class="wxqrimg">
+                                <div id="qrcode"></div>
+                            </div>
+                            <i class="wex-icon"></i>
+                        </div>
+                        <p>微信扫码分享</p>
+                    </div>
+                </div>
+                <div class="addr">
+                    <div class="tt">
+                        <ul>
+                            <li class="hover" data-share-path="url">直播间地址</li>
+                            <li>已经推荐 0 人，其中注册会员  0人</li>
+                        </ul>
+                    </div>
+                    <div class="s-box">
+                        <div class="cc" style="display:block;">
+                            <input class="inn js_page_url" name="" value="" type="text" data-share-input="path" readonly="" size="30">
+                            <a href="javascript:;" class="s_copy btn" id="J-share-copy-btn">复制链接</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../public/js/jquery.min.js"></script>
+    <script src="ZeroClipboard.min.js"></script>
+    <script src="jquery.qrcode.min.js"></script>
+    <script>
+        $(function(){
+            var host = location.href;
+            $('.js-share-weibo-btn').attr('href','http://service.weibo.com/share/share.php?url='+ encodeURIComponent(host+'#0-tsina-1-23005-397232819ff9a47a7b7e80a40613cfe1&appkey=1343713053')+'&title=%e7%b2%be%e5%bd%a9%e4%b8%8d%e5%ae%b9%e9%94%99%e8%bf%87');
+            $('.js-share-qq-btn').attr('href','http://connect.qq.com/widget/shareqq/index.html?url='+ encodeURIComponent(host+'#0-tsina-1-23005-397232819ff9a47a7b7e80a40613cfe1')+'&title=%e7%b2%be%e5%bd%a9%e4%b8%8d%e5%ae%b9%e9%94%99%e8%bf%87');
+            $('.js-share-qzone-btn').attr('href','https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url='+ encodeURIComponent(host+'#0-tsina-1-23005-397232819ff9a47a7b7e80a40613cfe1')+'&title=%e7%b2%be%e5%bd%a9%e4%b8%8d%e5%ae%b9%e9%94%99%e8%bf%87');
+            $('.js_page_url').val(host);
+            jQuery('#qrcode').qrcode({width:80,height:80,text:$(".js_page_url").val()});
+        });
+
+        $(function(){
+            var popCopy;
+            if(typeof ZeroClipboard != 'undefined'){
+                var client01 = new ZeroClipboard($('#J-share-copy-btn'));
+                client01.on( 'ready', function(event) {
+                    client01.on( 'copy', function(event) {
+                        var urlText = $(event.target).parent().find('.js_page_url').val();
+                        event.clipboardData.setData('text/plain', urlText);
+                    });
+
+                    client01.on( 'aftercopy', function(event) {
+                        if (!popCopy) {
+                            alert('复制成功');
+                        }
+                    });
+                });
+
+                client01.on( 'error', function(event) {
+                    // console.log( 'ZeroClipboard error of type "' + event.name + '": ' + event.message );
+                    ZeroClipboard.destroy();
+                });
+            }
+        })
+    </script>
+</body>
+</html>

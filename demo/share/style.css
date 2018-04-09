@@ -1,0 +1,224 @@
+
+
+.share-box * {
+	vertical-align: baseline;
+	font-weight: inherit;
+	font-family: inherit;
+	font-style: inherit;
+	font-size: 14px;
+	outline: 0;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	list-style: none;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+
+.share-box a {
+	color: #fff;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.share-box a:hover {
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.share-box a:active {
+	color: #ffffff;
+	text-decoration: none;
+}
+
+.share-box a:focus {
+	color: #444343;
+	text-decoration: none;
+}
+
+.share-box a:visited {
+	color: #ffffff;
+	text-decoration: none;
+}
+.share-box input.inn{
+	margin-top: 10px;
+}
+.share-box a.s_copy {
+	margin-top: 10px !important;
+}
+.share-box .action-item-content {
+    width: 400px;
+	padding: 10px 15px 15px;
+	top: 0%;
+	box-shadow: 10px 10px 5px #888888;
+	background-color: whitesmoke;
+	border-radius: 9px;
+}
+.share-box .share-more.clearfix{
+	height: 108px;
+}
+.share-box .action-item-content .share-more .share-third-list {
+    width: 250px;
+    float: left
+}
+
+.share-box .action-item-content .share-more .wx-qcode {
+    width: 85px;
+    float: left
+}
+
+.share-box .action-item-content .share-more .wx-qcode p {
+    font-size: 12px;
+    color: #2c3e50;
+    height: 24px;
+    line-height: 24px;
+    text-align: center
+}
+
+.share-box .action-item-content .share-more .wx-qcode a {
+    display: block;
+    width: 85px
+}
+
+.share-box .action-item-content .share-more .wx-qcode .wxqrimgbg {
+    position: relative;
+    width: 85px;
+    height: 85px;
+    background-color: #eee
+}
+
+.share-box .action-item-content .share-more .wx-qcode .wxqrimg {
+    width: 77px;
+    height: 77px;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    z-index: 1
+}
+.share-box .action-item-content .share-more .wx-qcode .wxqrimg img {
+	width: 77px;
+	height: 77px;
+}
+.share-box .action-item-content .share-more .wx-qcode .wex-icon {
+    display: block;
+    width: 21px;
+    height: 21px;
+    position: absolute;
+    top: 32px;
+    left: 35px;
+    background-position: 0 -350px;
+    z-index: 2
+}
+
+.share-box .action-item-content .share-more .trd-ullist li {
+    float: left;
+    margin-right: 23px
+}
+.share-box .action-item-content .tt {
+    padding: 10px 0;
+    height: 40px
+}
+
+.share-box .action-item-content .tt ul li {
+    height: 20px;
+    overflow: hidden;
+    padding: 0 5px;
+    text-align: center;
+    line-height: 20px;
+    float: left;
+	color: black;
+    cursor: pointer;
+    margin-right: 15px;
+    border-radius: 4px
+}
+
+.share-box .action-item-content .tt ul li.hover {
+    background: #f60;
+    color: #fff
+}
+
+.share-box .action-item-content .cc {
+    /*display: none;*/
+    position: relative
+}
+
+.share-box .action-item-content .cc .inn {
+    width: 273px;
+    height: 27px;
+    overflow: hidden;
+    line-height: 28px;
+    background: #eee;
+    border: 0;
+    outline: 0;
+    padding: 1px 6px;
+    margin-right: 12px;
+    float: left;
+    border-radius: 4px
+}
+
+.share-box .action-item-content .cc .btn {
+    display: inline-block;
+    width: 75px;
+    height: 29px;
+    padding: 0px;
+    line-height: 29px;
+    overflow: hidden;
+    border: 0;
+    background: #f60;
+    color: #fff;
+    outline: 0;
+    text-align: center;
+    line-height: 30px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px
+}
+
+.share-box .action-item-content .cc .btn.highlight {
+    background: #f14700
+}
+
+.share-box .action-item-content .h3 {
+    line-height: 16px;
+    font-size: 18px;
+    color: #2c3e50
+}
+
+.share-box .action-item-content .s-more {
+    margin-top: 28px
+}
+
+.share-box .action-item-content .s-more a {
+    background-position: 0 0;
+    display: block;
+    width: 45px;
+    height: 44px;
+    filter: alpha(opacity:100);
+    opacity: 1
+}
+
+.share-box .action-item-content .s-more a.sm1 {
+    background-position: 0 -280px
+}
+
+.share-box .action-item-content .s-more a.sm2 {
+    background-position: -61px -280px
+}
+
+.share-box .action-item-content .s-more a.sm3 {
+    background-position: -129px -280px
+}
+
+.share-box .action-item-content .s-more a.sm4 {
+    background-position: -215px -280px
+}
+
+.share-box .action-item-content .s-more a:hover {
+    filter: alpha(opacity:80);
+    opacity: .8
+}
+.share-box .action-item-content .s-more a, .share-box .action-item-content .share-more .wx-qcode .wex-icon, .share-box .tit .share-icon {
+    background: url("uinfo.png") no-repeat;
+}
