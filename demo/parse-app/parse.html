@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form id="tf">
+    <input type="file" name="app"/>
+    <input type="button" value="提" onclick="test();"/>
+</form>
+
+</body>
+<script src="../../public/js/jquery.min.js"></script>
+<script>
+    function test(){
+        var form = new FormData(document.getElementById("tf"));
+//             var req = new XMLHttpRequest();
+//             req.open("post", "${pageContext.request.contextPath}/public/testupload", false);
+//             req.send(form);
+        $.ajax({
+            url:"parse.php",
+            type:"post",
+            data:form,
+            processData:false,
+            contentType:false,
+            success:function(data){
+                window.clearInterval(timer);
+                console.log("over..");
+            },
+            error:function(e){
+                alert("错误！！");
+                window.clearInterval(timer);
+            }
+        });
+        get();//此处为上传文件的进度条
+    }
+</script>
+</html>
