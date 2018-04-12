@@ -6,13 +6,20 @@
  * Time: 22:40
  */
 
-require 'ApkParser.php';
 require 'IpaParser.php';
-var_dump($_FILES);
-$main = new ApkParser;
-$main->open($_FILES['app']['tmp_name']);
-echo 'package: '.$main->getPackage()."\n";
-/*echo 'version: '.$main->getVersionName()."\n";
-echo 'code: '.$main->getVersionCode()."\n";
-echo 'name: '.$main->getAppName()."\n";*/
+
+error_reporting(E_ALL);
+
+if(!empty($_FILES)){
+	$filepart = pathinfo($_FILES['app']['name']);
+	if(strtolower($filepart['extension']) == 'ipa'){
+		$dir = './data/';
+		$name = time().rand(111,999).'.ipa';
+		@move_uploaded_file($_FILES['app']['tmp_name'], $dir.$name);
+		$ipa = new IpaParser($dir, $name, $dir);
+		$ipa->handle();
+	}else{
+	}
+}
+?>
 
