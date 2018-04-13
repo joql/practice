@@ -11,6 +11,52 @@
  ******************************************************/
  
 class ApkParser{
+
+
+//----------------------
+// 类型常量定义
+//----------------------
+    const AXML_FILE             = 0x00080003;
+    const STRING_BLOCK          = 0x001C0001;
+    const RESOURCEIDS           = 0x00080180;
+    const START_NAMESPACE       = 0x00100100;
+    const END_NAMESPACE         = 0x00100101;
+    const START_TAG             = 0x00100102;
+    const END_TAG               = 0x00100103;
+    const TEXT                  = 0x00100104;
+
+    const TYPE_NULL             =0;
+    const TYPE_REFERENCE        =1;
+    const TYPE_ATTRIBUTE        =2;
+    const TYPE_STRING           =3;
+    const TYPE_FLOAT            =4;
+    const TYPE_DIMENSION        =5;
+    const TYPE_FRACTION         =6;
+    const TYPE_INT_DEC          =16;
+    const TYPE_INT_HEX          =17;
+    const TYPE_INT_BOOLEAN      =18;
+    const TYPE_INT_COLOR_ARGB8  =28;
+    const TYPE_INT_COLOR_RGB8   =29;
+    const TYPE_INT_COLOR_ARGB4  =30;
+    const TYPE_INT_COLOR_RGB4   =31;
+
+    const UNIT_MASK             = 15;
+    private static $RADIX_MULTS = array(0.00390625, 3.051758E-005, 1.192093E-007, 4.656613E-010);
+    private static $DIMENSION_UNITS = array("px","dip","sp","pt","in","mm","","");
+    private static $FRACTION_UNITS  = array("%","%p","","","","","","");
+
+    private $xml='';
+    private $length = 0;
+    private $stringCount = 0;
+    private $styleCount  = 0;
+    private $stringTab = array();
+    private $styleTab  = array();
+    private $resourceIDs = array();
+    private $ns = array();
+    private $cur_ns = NULL;
+    private $root = NULL;
+    private $line = 0;
+    private $img_base64;//icon base64
 //----------------------
 // 公共函数，供外部调用
 //----------------------
@@ -18,6 +64,7 @@ class ApkParser{
         $zip = new ZipArchive;
         if ($zip->open($apk_file) === TRUE) {
             $xml = $zip->getFromName($xml_file);
+            $this->img_base64 = 'data:image/jpg/png/gif;base64,'.chunk_split(base64_encode($zip->getFromName('res/drawable-mdpi/icon.png')));
             $zip->close();
             if ($xml){
                 try {
@@ -66,6 +113,10 @@ class ApkParser{
     public function getAppName(){
         return $this->getAttribute('manifest/application', 'android:name');
     }
+
+    public function getIcon(){
+        return $this->img_base64;
+    }
  
     public function getMainActivity(){
         for ($id=0; true; $id++){
@@ -93,50 +144,6 @@ class ApkParser{
         }
         return NULL;
     }
- 
-//----------------------
-// 类型常量定义
-//----------------------
-    const AXML_FILE             = 0x00080003;
-    const STRING_BLOCK          = 0x001C0001;
-    const RESOURCEIDS           = 0x00080180;
-    const START_NAMESPACE       = 0x00100100;
-    const END_NAMESPACE         = 0x00100101;
-    const START_TAG             = 0x00100102;
-    const END_TAG               = 0x00100103;
-    const TEXT                  = 0x00100104;
- 
-    const TYPE_NULL             =0;
-    const TYPE_REFERENCE        =1;
-    const TYPE_ATTRIBUTE        =2;
-    const TYPE_STRING           =3;
-    const TYPE_FLOAT            =4;
-    const TYPE_DIMENSION        =5;
-    const TYPE_FRACTION         =6;
-    const TYPE_INT_DEC          =16;
-    const TYPE_INT_HEX          =17;
-    const TYPE_INT_BOOLEAN      =18;
-    const TYPE_INT_COLOR_ARGB8  =28;
-    const TYPE_INT_COLOR_RGB8   =29;
-    const TYPE_INT_COLOR_ARGB4  =30;
-    const TYPE_INT_COLOR_RGB4   =31;
- 
-    const UNIT_MASK             = 15;
-    private static $RADIX_MULTS = array(0.00390625, 3.051758E-005, 1.192093E-007, 4.656613E-010);
-    private static $DIMENSION_UNITS = array("px","dip","sp","pt","in","mm","","");
-    private static $FRACTION_UNITS  = array("%","%p","","","","","","");
- 
-    private $xml='';
-    private $length = 0;
-    private $stringCount = 0;
-    private $styleCount  = 0;
-    private $stringTab = array();
-    private $styleTab  = array();
-    private $resourceIDs = array();
-    private $ns = array();
-    private $cur_ns = NULL;
-    private $root = NULL;
-    private $line = 0;
  
 //----------------------
 // 内部私有函数

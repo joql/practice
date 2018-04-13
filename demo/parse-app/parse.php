@@ -7,6 +7,7 @@
  */
 
 require 'IpaParser.php';
+require 'ApkParser.php';
 
 error_reporting(E_ALL);
 
@@ -18,7 +19,14 @@ if(!empty($_FILES)){
 		@move_uploaded_file($_FILES['app']['tmp_name'], $dir.$name);
 		$ipa = new IpaParser($dir, $name, $dir);
 		$ipa->handle();
-	}else{
+	}elseif (strtolower($filepart['extension'] == 'apk')){
+		$apk = new ApkParser();
+		$apk->open($_FILES['app']['tmp_name']);
+		echo $apk->getAppName();
+		echo $apk->getPackage();
+		echo $apk->getIcon();
+		echo $apk->getVersionName();
+		echo $apk->getVersionCode();
 	}
 }
 ?>

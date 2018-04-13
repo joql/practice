@@ -25,7 +25,7 @@ class IpaParser
     }
 
     private function ipa2Dir(){
-        $this->appDir = time()+rand('111','999');
+        $this->appDir = time().rand('111','999');
         @copy($this->oldDir.$this->filename, str_replace('ipa', 'zip', $this->newDir.$this->filename));
         $zip = new PclZip(str_replace('ipa', 'zip', $this->newDir.$this->filename));
         $dir = $this->newDir.$this->appDir.'/';
