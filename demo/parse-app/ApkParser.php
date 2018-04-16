@@ -111,7 +111,7 @@ class ApkParser{
     }
  
     public function getAppName(){
-        return $this->getAttribute('manifest/application', 'android:name');
+        return $this->getAttribute('manifest/application', 'android:label');
     }
 
     public function getIcon(){
