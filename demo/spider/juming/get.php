@@ -34,7 +34,7 @@ class juming{
             $url = 'http://www.juming.com/ykj/?api_sou=1&sfba=1999&ymlx=0&qian2=100&jgpx=0&meiye=&page='.$i.'&_='.time().'176';
             $response = $this->client->get($url);
             if($response->getStatusCode() != 200) continue;
-            preg_match_all('/value=\"(\d{7})\".*?target=\"_blank\">(.*)?<\/a>[\s\S]*?<td>(\d{2,3})/',$response->getBody(),$tmp);
+            preg_match_all('/value=\"(\d{7})\".*?target=\"_blank\">(.*)?<\/a>[\s\S]*?<td>(\d{2,3})元/',mb_convert_encoding($response->getBody(), 'utf-8', 'gbk'),$tmp);
             foreach ($tmp[1] as $k=>$v){
                 $list[] = ['url_id'=>$tmp[1][$k],'url'=>$tmp[2][$k],'price'=>$tmp[3][$k]];
             }
