@@ -7,13 +7,10 @@
  */
 
 require 'IpaParser.php';
-require 'ApkParser.php';
-require 'test.php';
+require 'apptOnPhp.php';
 
 error_reporting(E_ALL);
 
-exec('aapt d badging test.apk 2>&1', $out, $resutl);
-var_dump($out);
 if(!empty($_FILES)){
 	$filepart = pathinfo($_FILES['app']['name']);
 	if(strtolower($filepart['extension']) == 'ipa'){
@@ -23,13 +20,12 @@ if(!empty($_FILES)){
 		$ipa = new IpaParser($dir, $name, $dir);
 		$ipa->handle();
 	}elseif (strtolower($filepart['extension'] == 'apk')){
-//		$apk = new ApkParser();
-//		$apk->open($_FILES['app']['tmp_name']);
-//		echo $apk->getAppName();
-//		//echo $apk->getPackage();
-//		//echo $apk->getIcon();
-//		//echo $apk->getVersionName();
-//		//echo $apk->getVersionCode();
+        $test = new apptOnPhp($_FILES['app']['tmp_name'], 'D:\tool\apk-tools\aapt');
+        if($test->parse()){
+            echo $test->getPackageName();
+            echo $test->getAppName();
+            echo $test->getIcon();
+        }
 	}
 }
 ?>
