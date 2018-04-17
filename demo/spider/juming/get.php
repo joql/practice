@@ -6,11 +6,12 @@
  * Time: 14:18
  */
 
-require '../../init.php';
+require '../../../init.php';
 
 use GuzzleHttp\Client;
-global $db;
 
+error_reporting(E_ALL);
+global $db;
 
 $juming = new juming($db);
 //$juming->getUrlId();
@@ -47,16 +48,20 @@ class juming{
         $list = $this->db->get('juming_url_id_list');
         foreach ($list as $v){
             $url = 'http://www.juming.com/mai_yes.htm?id='.$v['url_id'].'&_='.time().'897&wxjc=y';
-            $response = $this->client->get($url);
+            $response = $this->client->get($url, [
+                'headers' => [
+                    'User-Agent' => 'testing/1.0'
+                ]
+            ]);
             if($response->getStatusCode() != 200) continue;
             $body = $response->getBody()->getContents();
             $body = mb_convert_encoding($body, 'utf-8', 'gbk');
             if(mb_strpos($body,'未拦截') !== false){
                 $this->db->where('id='.$v['id'])->update('juming_url_id_list',['wx_state'=>1],1);
-                echo $v['url'].'  ok'."\n";
+                echo 'body: '.$body.' url: '.$v['url'].'  ok'."\n";
             }else{
                 $this->db->where('id='.$v['id'])->update('juming_url_id_list',['wx_state'=>0],1);
-                echo $v['url'].'  fail'."\n";
+                echo 'body: '.$body.' url: '.$v['url'].'  fail'."\n";
             }
         }
     }
