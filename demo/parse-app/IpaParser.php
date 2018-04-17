@@ -16,6 +16,8 @@ class IpaParser
     private $oldDir;//原目录
     private $filename;//文件名
     private $appDir;//app 目录名
+    private $plist;
+    private $d;
 
     public function __construct($oldDir, $filename, $newDir)
     {
@@ -36,54 +38,63 @@ class IpaParser
         return true;
     }
 
-    private function parse(){
+    public function parse(){
+        $this->ipa2Dir();
+        
         $dir = $this->newDir.$this->appDir.'/Payload';
         if(!is_dir($dir)){
             return false;
         }
 
-
-        $d = NULL;
+        $this->d= NULL;
         $h = opendir($dir);
         while ($f = readdir($h)) {
             if ($f != '.' && $f != '..' && is_dir($dir . '/' . $f)) {
-                $d = $dir . '/' . $f;
+                $this->d= $dir . '/' . $f;
             }
         }
         closedir($h);
-        $info = file_get_contents($d . '/Info.plist');
+        $info = file_get_contents($this->d. '/Info.plist');
         $plist = new \CFPropertyList\CFPropertyList();
         $plist->parse($info);
-        $plist = $plist->toArray();
+        $this->plist = $plist->toArray();
+        return true;
+    }
+    
+    public function  getAppName(){
+        return $this->plist['CFBundleDisplayName'];
+    }
+    
+    public function getBid(){
+        return $this->plist['CFBundleIdentifier'];
+    }
+    public function getVersion(){
+        return $this->plist['CFBundleShortVersionString'];
+    }
 
-        $xml_name = $plist['CFBundleDisplayName'];
-        $xml_mnvs = $plist['MinimumOSVersion'];
-        $xml_bid = $plist['CFBundleIdentifier'];
-        $xml_bsvs = $plist['CFBundleShortVersionString'];
-        $xml_bvs = $plist['CFBundleVersion'];
-
+    public function  getIcon($type='base64'){
         //icon
         $icon_path = $this->newDir.$this->appDir.'.png';
-        $icon = $plist['CFBundleIcons']['CFBundlePrimaryIcon']['CFBundleIconFiles'];
+        $icon = $this->plist['CFBundleIcons']['CFBundlePrimaryIcon']['CFBundleIconFiles'];
         if (preg_match('/\./', $icon[0])) {
             for ($i = 0; $i < count($icon); $i++) {
-                $array[] = filesize($d . '/' . $icon[$i]);
+                $array[] = filesize($this->d. '/' . $icon[$i]);
             }
             sort($array);
             for ($p = 0; $p < count($icon); $p++) {
-                if ($array[0] == filesize($d . '/' . $icon[$p])) {
-                    $oldfile = $d . '/' . $icon[$p];
+                if ($array[0] == filesize($this->d. '/' . $icon[$p])) {
+                    $oldfile = $this->d. '/' . $icon[$p];
                 }
             }
         } else {
             for ($i = 0; $i < count($icon); $i++) {
-                $array[] = filesize($d . '/' . $icon[$i] . '@2x.png');
+                $array[] = filesize($this->d. '/' . $icon[$i] . '@2x.png');
             }
             sort($array);
             for ($p = 0; $p < count($icon); $p++) {
-                if ($array[0] == filesize($d . '/' . $icon[$p] . '@2x.png')) {
+                if ($array[0] == filesize($this->d. '/' . $icon[$p] . '@2x.png')) {
                     $ext = preg_match('/20x20/', $icon[$p]) ? '@3x.png' : '@2x.png';
-                    $oldfile = $d . '/' . $icon[$p] . $ext;
+                    $oldfile = $this->d. '/' . $icon[$p] . $ext;
                 }
             }
         }
@@ -91,24 +102,16 @@ class IpaParser
         if (!$png->revertIphone($icon_path)) {
             //copy('../../../static/app/icon.png', $icon_path);
         }
-        $xml_icon = $icon_path;
-
-        return [
-            'name'=>$xml_name,
-            'mnvs'=>$xml_mnvs,
-            'bid'=>$xml_bid,
-            'bsvs'=>$xml_bsvs,
-            'bvs'=>$xml_bvs,
-            'icon'=>$xml_icon
-        ];
+        if($type == 'base64'){
+            $handle  =  fopen ( $icon_path ,  "r" );
+            $contents  =  fread ( $handle ,  filesize ( $icon_path ));
+            fclose ( $handle );
+            return 'data:image/jpg/png/gif;base64,'.base64_encode($contents);
+        }elseif ($type == 'file'){
+            return $icon_path;
+        }
 
     }
-
-    public function handle(){
-        $this->ipa2Dir();
-       var_dump($this->parse());
-    }
-
     /**
      * use for:编码转换
      * auth: Joql

@@ -18,7 +18,12 @@ if(!empty($_FILES)){
 		$name = time().rand(111,999).'.ipa';
 		@move_uploaded_file($_FILES['app']['tmp_name'], $dir.$name);
 		$ipa = new IpaParser($dir, $name, $dir);
-		$ipa->handle();
+		if($ipa->parse()){
+			echo $ipa->getAppName();
+			echo $ipa->getBid();
+			echo $ipa->getVersion();
+			echo $ipa->getIcon();
+		}
 	}elseif (strtolower($filepart['extension'] == 'apk')){
         $test = new apptOnPhp($_FILES['app']['tmp_name'], 'D:\tool\apk-tools\aapt');
         if($test->parse()){
