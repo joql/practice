@@ -6,9 +6,11 @@
  * Time: 16:44
  */
 
-require 'zip.php';
-require 'CFPropertyList/CFPropertyList.php';
-require 'pngCompote.php';
+namespace Extend;
+
+require __DIR__.'/IosParse/zip.php';
+require __DIR__.'/IosParse/CFPropertyList/CFPropertyList.php';
+require __DIR__.'/IosParse/pngCompote.php';
 
 class IpaParser
 {
@@ -29,7 +31,7 @@ class IpaParser
     private function ipa2Dir(){
         $this->appDir = time().rand('111','999');
         @copy($this->oldDir.$this->filename, str_replace('ipa', 'zip', $this->newDir.$this->filename));
-        $zip = new PclZip(str_replace('ipa', 'zip', $this->newDir.$this->filename));
+        $zip = new \PclZip(str_replace('ipa', 'zip', $this->newDir.$this->filename));
         $dir = $this->newDir.$this->appDir.'/';
         if(!is_dir($dir)){
             @mkdir($dir, 0777, true);
@@ -40,7 +42,7 @@ class IpaParser
 
     public function parse(){
         $this->ipa2Dir();
-        
+
         $dir = $this->newDir.$this->appDir.'/Payload';
         if(!is_dir($dir)){
             return false;
@@ -60,11 +62,11 @@ class IpaParser
         $this->plist = $plist->toArray();
         return true;
     }
-    
+
     public function  getAppName(){
         return $this->plist['CFBundleDisplayName'];
     }
-    
+
     public function getBid(){
         return $this->plist['CFBundleIdentifier'];
     }
