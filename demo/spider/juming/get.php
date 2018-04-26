@@ -14,8 +14,16 @@ error_reporting(E_ALL);
 global $db;
 
 $juming = new juming($db);
-//$juming->getUrlId();
-$juming->checkWxState();
+$act = $argv[1];
+
+switch ($act){
+    case 'get':
+        $juming->getUrlId();
+        break;
+    case 'check':
+        $juming->checkWxState();
+}
+
 
 
 class juming{
