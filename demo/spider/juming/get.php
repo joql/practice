@@ -41,11 +41,15 @@ class juming{
         $list= array();
         for($i=1;$i<=90;$i++){
             $url = 'http://www.juming.com/ykj/?api_sou=1&sfba=1999&ymlx=0&qian2=100&jgpx=0&meiye=&page='.$i.'&_='.time().'176';
-            $response = $this->client->get($url, [
-                'headers' => [
-                    'User-Agent' => 'testing/1.0'
-                ]
-            ]);
+            try{
+                $response = $this->client->get($url, [
+                    'headers' => [
+                        'User-Agent' => 'testing/1.0'
+                    ]
+                ]);
+            }catch (Exception $e){
+                continue;
+            };
             if($response->getStatusCode() != 200) continue;
 			echo "get page $i \n";
             preg_match_all('/value=\"(\d{7})\".*?target=\"_blank\">(.*)?<\/a>[\s\S]*?<td>(\d{2,3})元/',mb_convert_encoding($response->getBody(), 'utf-8', 'gbk'),$tmp);
@@ -61,11 +65,15 @@ class juming{
         $list = $this->db->get('juming_url_id_list');
         foreach ($list as $v){
             $url = 'http://www.juming.com/mai_yes.htm?id='.$v['url_id'].'&_='.time().'897&wxjc=y';
-            $response = $this->client->get($url, [
-                'headers' => [
-                    'User-Agent' => 'testing/1.0'
-                ]
-            ]);
+            try{
+                $response = $this->client->get($url, [
+                    'headers' => [
+                        'User-Agent' => 'testing/1.0'
+                    ]
+                ]);
+            }catch (Exception $e){
+                continue;
+            }
             if($response->getStatusCode() != 200) continue;
             $body = $response->getBody()->getContents();
             $body = mb_convert_encoding($body, 'utf-8', 'gbk');
