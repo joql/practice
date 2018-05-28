@@ -54,7 +54,7 @@ class juming{
 			echo "get page $i \n";
             preg_match_all('/value=\"(\d{7})\".*?target=\"_blank\">(.*)?<\/a>[\s\S]*?<td>(\d{2,3})元/',mb_convert_encoding($response->getBody(), 'utf-8', 'gbk'),$tmp);
             foreach ($tmp[1] as $k=>$v){
-                $list[] = ['url_id'=>$tmp[1][$k],'url'=>$tmp[2][$k],'price'=>$tmp[3][$k]];
+                $list[] = ['url_id'=>$tmp[1][$k],'url'=>html_entity_decode($tmp[2][$k]),'price'=>$tmp[3][$k]];
             }
         }
 

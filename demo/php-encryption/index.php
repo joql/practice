@@ -22,7 +22,15 @@ echo '解密后：'.authcode($w,'DECODE','nygzh');
 echo '<br />';
 echo '请求格式：?code='.urlencode($w);
 
-
+$url = 'https://weixin.nuoyun.tv/api/api.php?code='.urlencode($w);
+$curl = curl_init();
+curl_setopt($curl, CURLOPT_URL, $url);
+curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+$data = curl_exec($curl);
+curl_close($curl);
+var_dump($data);
 /**
  * use for:
  * auth: Joql
