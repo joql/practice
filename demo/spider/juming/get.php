@@ -9,8 +9,9 @@
 require '../../../init.php';
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Cookie\CookieJar;
 
-error_reporting(E_ALL);
+error_reporting(E_ALL & ~E_NOTICE);
 global $db;
 
 $juming = new juming($db);
@@ -41,21 +42,25 @@ class juming{
         $list= array();
         for($i=1;$i<=90;$i++){
             $url = 'http://www.juming.com/ykj/?api_sou=1&sfba=1999&ymlx=0&qian2=100&jgpx=0&meiye=&page='.$i.'&_='.time().'176';
+            $cookieJar = CookieJar::fromArray([
+                'ASPSESSIONIDACDDCBTQ' => 'MGIDFPICDOAPDBIHJOFNLJCF'
+            ], 'www.juming.com');  // 此处记得请求域名需要保持跟请求的url host一致，否则不会携带此cookie。
             try{
                 $response = $this->client->get($url, [
                     'headers' => [
-                        'User-Agent' => 'testing/1.0'
-                    ]
+                        'User-Agent' => 'testing/1.0',
+                    ],
+                    'cookies'     => $cookieJar
                 ]);
             }catch (Exception $e){
                 continue;
             };
             if($response->getStatusCode() != 200) continue;
-			echo "get page $i \n";
             preg_match_all('/value=\"(\d{7})\".*?target=\"_blank\">(.*)?<\/a>[\s\S]*?<td>(\d{2,3})元/',mb_convert_encoding($response->getBody(), 'utf-8', 'gbk'),$tmp);
             foreach ($tmp[1] as $k=>$v){
                 $list[] = ['url_id'=>$tmp[1][$k],'url'=>html_entity_decode($tmp[2][$k]),'price'=>$tmp[3][$k]];
             }
+            echo "get page $i  sucesss num:".count($tmp[1])."\n";
         }
 
         $this->db->insertMulti('juming_url_id_list',$list);
