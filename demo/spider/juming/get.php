@@ -11,12 +11,14 @@ require '../../../init.php';
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 
+
 error_reporting(E_ALL & ~E_NOTICE);
 global $db;
 
 $juming = new juming($db);
 $act = $argv[1];
 
+$juming->login();
 switch ($act){
     case 'get':
         $juming->getUrlId();
@@ -30,6 +32,7 @@ switch ($act){
 class juming{
     private $client;
     private $db;
+    private $cookie;
 
 
     public function __construct($db)
@@ -38,12 +41,53 @@ class juming{
         $this->db = $db;
     }
 
+    public function login(){
+
+
+        $response = $this->client->get('http://www.juming.com/index.htm',[
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36'
+            ]
+        ]);
+
+        if($response->getStatusCode() != 200 ) return false;
+
+        $cookies = $response->getHeaders();
+
+        foreach ($cookies['Set-Cookie'] as $k=>$v){
+            if(strpos($v,'ASPSESSION') !== false){
+                $this->cookie = explode('=',current(explode(';',$v)));
+                break;
+            }
+        }
+
+        echo 'cookie: '.$this->cookie[0].'='.$this->cookie[1]."\n";
+        $body = mb_convert_encoding($response->getBody(), 'utf-8', 'gbk');
+        preg_match("/flogin2\(this,\'(.*)\'/",$body,$code);
+        echo 'code: '.$code[1]."\n";
+        $cookieJar = CookieJar::fromArray([
+            $this->cookie[0] => $this->cookie[1]
+        ], 'www.juming.com');
+        $login = $this->client->post('http://www.juming.com/if.htm',[
+            'form_params'=>[
+                'tj_fs'=>'1',
+                're_yx'=>'672487663@qq.com',
+                're_code'=>$code[1],
+                're_mm'=>$this->getPwd('13037647351YIN',$code[1])
+            ],
+            'cookies'=>$cookieJar,
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36'
+            ]
+        ]);
+        //echo $login->getBody();
+    }
     public function getUrlId(){
         $list= array();
-        for($i=1;$i<=90;$i++){
+        for($i=10;$i<=90;$i++){
             $url = 'http://www.juming.com/ykj/?api_sou=1&sfba=1999&ymlx=0&qian2=100&jgpx=0&meiye=&page='.$i.'&_='.time().'176';
             $cookieJar = CookieJar::fromArray([
-                'ASPSESSIONIDACDDCBTQ' => 'MGIDFPICDOAPDBIHJOFNLJCF'
+                $this->cookie[0] => $this->cookie[1]
             ], 'www.juming.com');  // 此处记得请求域名需要保持跟请求的url host一致，否则不会携带此cookie。
             try{
                 $response = $this->client->get($url, [
@@ -90,6 +134,10 @@ class juming{
                 echo 'body: '.$body.' url: '.$v['url'].'  fail'."\n";
             }
         }
+    }
+
+    private function getPwd($pwd, $code){
+        return substr(md5($code.substr(md5('[jiami'.$pwd.'mima]'),0,19)),0,19);
     }
 }
 

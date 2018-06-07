@@ -15,28 +15,29 @@
  * auth: ksj
  * date:2017-10-10   15:20
  */
-function curl($url,array $array=array() ,$type = 'get') {
+function curl($url, array $array = array(), $type = 'get')
+{
     $ch = curl_init();
-    if($type == 'get'){
-        if(is_array($array) && is_null($array)) {
+    if ($type == 'get') {
+        if (is_array($array) && is_null($array)) {
             $query = http_build_query($array);
             $url = $url . '?' . $query;
         }
     }
-    if(stripos($url, "https://") !== false) {
+    if (stripos($url, "https://") !== false) {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
     }
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 );
-    if($type == 'post'){
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    if ($type == 'post') {
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $array);
     }
     $content = curl_exec($ch);
     $status = curl_getinfo($ch);
     curl_close($ch);
-    if(intval($status["http_code"]) == 200) {
+    if (intval($status["http_code"]) == 200) {
         return $content;
     } else {
         return $status["http_code"];
@@ -54,19 +55,20 @@ function curl($url,array $array=array() ,$type = 'get') {
  * @param second Int 等待超时时间，默认30s
  * @return 远端返回的响应信息
  * */
-function postCurl($url, $data, $is_xml=false, $second=30){
+function postCurl($url, $data, $is_xml = false, $second = 30)
+{
     $ch = curl_init();
     //设置超时
     curl_setopt($ch, CURLOPT_TIMEOUT, $second);
 
-    curl_setopt($ch,CURLOPT_URL, $url);
-    curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,FALSE);
-    curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,FALSE);//严格校验
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);//严格校验
     //设置header
     curl_setopt($ch, CURLOPT_HEADER, FALSE);
     //要求结果为字符串且输出到屏幕上
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-    if($is_xml){
+    if ($is_xml) {
         $header[] = "Content-type: text/xml";        //定义content-type为xml,注意是数组
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
     }
@@ -76,7 +78,7 @@ function postCurl($url, $data, $is_xml=false, $second=30){
     //运行curl
     $data = curl_exec($ch);
     //返回结果
-    if($data){
+    if ($data) {
         curl_close($ch);
         return $data;
     } else {
@@ -92,45 +94,48 @@ function postCurl($url, $data, $is_xml=false, $second=30){
  * @return bool
  * date:2017-09-13   10:09
  */
-function getPhoneType($phone){
+function getPhoneType($phone)
+{
 
     $phone_rules = array(
-        '尾号ABCDABCD'=>'/\d{3}((?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){3}\d)\1/',
-        '尾号AAAAAA	'=>'/\d{5}(\d)\1\1\1\1\1/',
-        '尾号AAABBB	'=>'/\d{5}(\d)\1\1(\d)\2\2/',
-        '尾号AABBCC	'=>'/\d{5}(\d)\1(\d)\2(\d)\3/',
-        '尾号AAAAA	'=>'/\d{6}(\d)\1\1\1\1/',
-        '尾号AABBB	'=>'/\d{6}(\d)\1(\d)\2\2/',
-        '尾号ABCDE	'=>'/\d{6}(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){4}\d/',
-        '尾号AABAA	'=>'/\d{6}(\d)\1(\d)\1\1/',
-        '尾号AAAAB	'=>'/\d{6}(\d)\1\1\1(\d)/',
-        '中间AAAA	'=>'/(\d)\1\1\1\d{1}/',
-        '尾号AAAA	'=>'/\d{7}(\d)\1\1\1/',
-        '尾号ABCD	'=>'/\d{7}(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){3}\d/',
-        '尾号AAAB	'=>'/\d{7}(\d)\1\1(\d)/',
-        '尾号AABA	'=>'/\d{7}(\d)\1(\d)\1/',
-        '尾号ABAA	'=>'/\d{7}(\d)(\d)\1\1/',
-        '尾号ABBA	'=>'/\d{7}(\d)(\d)\2\1/',
-        '尾号ABAB	'=>'/\d{7}(\d)(\d)\1\2/',
-        '尾号ABC	'=>'/\d{8}(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){2}\d/',
-        '中间AAA	'=>'/(\d)\1\1\d{1}/',
-        '尾号AAA	'=>'/\d{8}(\d)\1\1/',
-        '尾号AA		'=>'/\d{9}(\d)\1/'
+        '尾号ABCDABCD' => '/\d{3}((?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){3}\d)\1/',
+        '尾号AAAAAA	' => '/\d{5}(\d)\1\1\1\1\1/',
+        '尾号AAABBB	' => '/\d{5}(\d)\1\1(\d)\2\2/',
+        '尾号AABBCC	' => '/\d{5}(\d)\1(\d)\2(\d)\3/',
+        '尾号AAAAA	' => '/\d{6}(\d)\1\1\1\1/',
+        '尾号AABBB	' => '/\d{6}(\d)\1(\d)\2\2/',
+        '尾号ABCDE	' => '/\d{6}(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){4}\d/',
+        '尾号AABAA	' => '/\d{6}(\d)\1(\d)\1\1/',
+        '尾号AAAAB	' => '/\d{6}(\d)\1\1\1(\d)/',
+        '中间AAAA	' => '/(\d)\1\1\1\d{1}/',
+        '尾号AAAA	' => '/\d{7}(\d)\1\1\1/',
+        '尾号ABCD	' => '/\d{7}(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){3}\d/',
+        '尾号AAAB	' => '/\d{7}(\d)\1\1(\d)/',
+        '尾号AABA	' => '/\d{7}(\d)\1(\d)\1/',
+        '尾号ABAA	' => '/\d{7}(\d)(\d)\1\1/',
+        '尾号ABBA	' => '/\d{7}(\d)(\d)\2\1/',
+        '尾号ABAB	' => '/\d{7}(\d)(\d)\1\2/',
+        '尾号ABC	' => '/\d{8}(?:0(?=1)|1(?=2)|2(?=3)|3(?=4)|4(?=5)|5(?=6)|6(?=7)|7(?=8)|8(?=9)){2}\d/',
+        '中间AAA	' => '/(\d)\1\1\d{1}/',
+        '尾号AAA	' => '/\d{8}(\d)\1\1/',
+        '尾号AA		' => '/\d{9}(\d)\1/'
     );
 
-    foreach($phone_rules as $k =>$v){
-        if(preg_match($v,$phone)){
+    foreach ($phone_rules as $k => $v) {
+        if (preg_match($v, $phone)) {
             return $k;
         }
     }
     return false;
 }
 
-function intToMoney(& $number){
-    $number= $number/100;
+function intToMoney(& $number)
+{
+    $number = $number / 100;
 }
 
-function xmlToArray($xml){
+function xmlToArray($xml)
+{
     //将XML转为array
     $array_data = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
     return $array_data;
@@ -144,7 +149,8 @@ function xmlToArray($xml){
  * @return string
  * date:2017-09-12   17:10
  */
-function returnAjax($code, $msg = '', $data = array()){
+function returnAjax($code, $msg = '', $data = array())
+{
     header('Content-Type:application/json; charset=utf-8');
     exit(json_encode(array('code' => $code, 'data' => $data, 'message' => $msg)));
 }
@@ -155,9 +161,10 @@ function returnAjax($code, $msg = '', $data = array()){
  * user: ksj
  * date:2017-10-10 23:08
  */
-function download($filepath){
-    header('content-disposition:attachment;filename='.basename($filepath));
-    header('content-length:'.filesize($filepath));
+function download($filepath)
+{
+    header('content-disposition:attachment;filename=' . basename($filepath));
+    header('content-length:' . filesize($filepath));
     readfile($filepath);
 }
 
@@ -169,11 +176,12 @@ function download($filepath){
  * user: ksj
  * date:2017-10-11 20:47
  */
-function saveFile($path,$str){
-    $file_hand = fopen($path,'ab');
-    if(!$file_hand) return false;
-    if(!is_writable($path)) return false;
-    if(fwrite($file_hand,$str) && fclose($file_hand)) return true;
+function saveFile($path, $str)
+{
+    $file_hand = fopen($path, 'ab');
+    if (!$file_hand) return false;
+    if (!is_writable($path)) return false;
+    if (fwrite($file_hand, $str) && fclose($file_hand)) return true;
     return false;
 }
 
@@ -185,11 +193,12 @@ function saveFile($path,$str){
  * @return mixed
  * date:2018-03-14 23:23
  */
-function arrayMergBy2($old,$new){
-    if(empty($old)) return $new;
-    foreach ($old as $k=>$v){
-        foreach ($new[$k] as $v){
-            array_push($old[$k],$v);
+function arrayMergBy2($old, $new)
+{
+    if (empty($old)) return $new;
+    foreach ($old as $k => $v) {
+        foreach ($new[$k] as $v) {
+            array_push($old[$k], $v);
         }
     }
     return $old;
