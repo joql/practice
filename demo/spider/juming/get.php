@@ -84,7 +84,7 @@ class juming{
     }
     public function getUrlId(){
         $list= array();
-        for($i=10;$i<=90;$i++){
+        for($i=1;$i<=90;$i++){
             $url = 'http://www.juming.com/ykj/?api_sou=1&sfba=1999&ymlx=0&qian2=100&jgpx=0&meiye=&page='.$i.'&_='.time().'176';
             $cookieJar = CookieJar::fromArray([
                 $this->cookie[0] => $this->cookie[1]
