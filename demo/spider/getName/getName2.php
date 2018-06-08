@@ -52,7 +52,6 @@ class getName
                     }
                     echo 'the '.($i/1000).' is save'."\n";
                     saveFile('./name-'.time().'-'.ceil($i/1000).'.txt',$str);
-                    continue;
                 }
                 unset($save);
                 unset($str);
