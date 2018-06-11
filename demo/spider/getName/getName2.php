@@ -19,6 +19,7 @@ class getName
 {
     public $sorce_path;
     public $name_list;
+    public $page_max = 100000;
 
     public function __construct($sorce_path ='./', $target_path = './')
     {
@@ -45,13 +46,13 @@ class getName
         $count = count($this->name_list);
         echo "total : $count \n";
         for($i=0;$i<$count;$i++){
-            if($i != 0 && $i%100000 === 0){
+            if($i != 0 && $i%$this->page_max === 0){
                 if(!empty($save)){
                     foreach ($save as $v){
                         $str .= $v."\r\n";
                     }
-                    echo 'the '.($i/1000).' is save'."\n";
-                    saveFile('./name-'.time().'-'.ceil($i/1000).'.txt',$str);
+                    echo 'the '.($i/$this->page_max).' is save'."\n";
+                    saveFile('./name-'.time().'-'.ceil($i/$this->page_max).'.txt',$str);
                 }
                 unset($save);
                 unset($str);
@@ -63,8 +64,8 @@ class getName
             foreach ($save as $v){
                 $str .= $v."\r\n";
             }
-            echo 'the '.ceil($i/1000).' is save'."\n";
-            saveFile('./name-'.time().'-'.ceil($i/1000).'.txt',$str);
+            echo 'the '.ceil($i/$this->page_max).' is save'."\n";
+            saveFile('./name-'.time().'-'.ceil($i/$this->page_max).'.txt',$str);
 
         }
     }
