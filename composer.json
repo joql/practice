@@ -13,6 +13,6 @@
         "houdunwang/zip": "^1.0",
         "guzzlehttp/guzzle": "~6.0",
         "joshcam/mysqli-database-class": "dev-master",
-        "phalapi/apk": "2.0.*"
+        "qiniu/php-sdk": "^7.2"
     }
 }

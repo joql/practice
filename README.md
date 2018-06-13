@@ -28,4 +28,5 @@
 - h5-record web 可录可听 android 可录可听  ios可听
 - parse-app 包解析 android ios[[成品分发系统demo](https://github.com/joql/ff-fgn)]
 - datatables 
+- qiniu fetch抓取第三方图片
 
