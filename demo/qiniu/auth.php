@@ -6,7 +6,7 @@
  * Time: 9:39
  */
 
-require '../../init.php';
+/*require '../../init.php';
 
 
 use GuzzleHttp\Client;
@@ -28,7 +28,7 @@ $response = $client->get("http://iovip-z1.qbox.me".$data[0],[
 ]);
 
 $result = $response->getBody();
-echo $result;
+echo $result;*/
 /*{"fsize":34329,"hash":"Fkf3l424A8kf681zo_fxmWtGq8QO","key":"Fkf3l424A8kf681zo_fxmWtGq8QO","mimeType":"image/png"}*/
 
 class QiNiu
