@@ -317,7 +317,7 @@ class YueRu
         if(empty($img['key'])){
             return false;
         }else{
-            return 'http://oykeubbl7.bkt.clouddn.com/'.$img['key'];
+            return 'http://paaldiona.sabkt.gdipper.com/'.$img['key'];
         }
     }
 
