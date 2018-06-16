@@ -16,29 +16,31 @@ error_reporting(E_ALL & ~E_NOTICE);
 global $db;
 
 $juming = new juming($db);
-$act = $argv[1];
-
-$juming->login();
-switch ($act){
-    case 'get':
-        $juming->getUrlId();
-        break;
-    case 'check':
-        $juming->checkWxState();
-}
-
-
+$juming->run();
 
 class juming{
     private $client;
     private $db;
     private $cookie;
+    private $theads=2;//线程数
+    private $url_list;//域名列表
 
 
     public function __construct($db)
     {
         $this->client = new Client();
         $this->db = $db;
+    }
+
+    public function run(){
+        //登陆
+        //$this->login();
+        //获取域名列表
+        //$this->getUrlId();
+        //微信封禁检测
+        $this->getUrlList();
+        //$this->checkWxState();
+        $this->getDetailInfo();
     }
 
     public function login(){
@@ -82,6 +84,12 @@ class juming{
         ]);
         //echo $login->getBody();
     }
+
+    /**
+     * use for:
+     * auth: Joql
+     * date:2018-06-16 22:21
+     */
     public function getUrlId(){
         $list= array();
         for($i=1;$i<=90;$i++){
@@ -108,32 +116,101 @@ class juming{
         }
 
         $this->db->insertMulti('juming_url_id_list',$list);
+
+    }
+
+    public function getUrlList(){
+        $this->url_list = $this->db->get('juming_url_id_list');
     }
 
     public function checkWxState(){
-        $list = $this->db->get('juming_url_id_list');
-        foreach ($list as $v){
-            $url = 'http://www.juming.com/mai_yes.htm?id='.$v['url_id'].'&_='.time().'897&wxjc=y';
-            try{
-                $response = $this->client->get($url, [
-                    'headers' => [
-                        'User-Agent' => 'testing/1.0'
-                    ]
-                ]);
-            }catch (Exception $e){
-                continue;
+
+        $client = $this->client;
+        //创建请求
+        $requests = function () use ($client){
+            foreach ($this->url_list as $v){
+                yield function () use ($client, $v){
+                    $url = 'http://www.juming.com/mai_yes.htm?id='.$v['url_id'].'&_='.time().'897&wxjc=y';
+                    return $client->getAsync($url,[
+                        'headers' => [
+                            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)'
+                        ]
+                    ]);
+                };
             }
-            if($response->getStatusCode() != 200) continue;
-            $body = $response->getBody()->getContents();
-            $body = mb_convert_encoding($body, 'utf-8', 'gbk');
-            if(mb_strpos($body,'未拦截') !== false){
-                $this->db->where('id='.$v['id'])->update('juming_url_id_list',['wx_state'=>1],1);
-                echo 'body: '.$body.' url: '.$v['url'].'  ok'."\n";
-            }else{
-                $this->db->where('id='.$v['id'])->update('juming_url_id_list',['wx_state'=>0],1);
-                echo 'body: '.$body.' url: '.$v['url'].'  fail'."\n";
+        };
+
+        //创建线程池
+        $pool = new \GuzzleHttp\Pool($client, $requests(),[
+            'concurrency'=>$this->theads,
+            'fulfilled'=>function($response, $index){
+                if($response->getStatusCode() == '200'){
+                    $body = $response->getBody()->getContents();
+                    $body = mb_convert_encoding($body, 'utf-8', 'gbk');
+                    if(mb_strpos($body,'未拦截') !== false){
+                        $this->db->where('id='.$this->url_list[$index]['id'])->update('juming_url_id_list',['wx_state'=>1],1);
+                        echo 'body: '.$body.' url: '.$this->url_list[$index]['url'].'  ok'."\n";
+                    }else{
+                        $this->db->where('id='.$this->url_list[$index]['id'])->update('juming_url_id_list',['wx_state'=>0],1);
+                        echo 'body: '.$body.' url: '.$this->url_list[$index]['url'].'  fail'."\n";
+                    }
+                }else{
+                    echo 'body: code!=200 url: '.$this->url_list[$index]['url'].'  fail'."\n";
+                }
+
+            },
+            'rejected' => function($reason, $index){
+                echo 'body: code!=200 url: '.$this->url_list[$index]['url'].'  fail'."\n";
             }
-        }
+        ]);
+        $promise = $pool->promise();
+        $promise->wait();
+        echo "checked over \n";
+    }
+
+    public function getDetailInfo(){
+        $client = $this->client;
+        //创建请求
+        $requests = function () use ($client){
+            foreach ($this->url_list as $v){
+                yield function () use ($client, $v){
+                    $url = 'http://www.juming.com/mai_yes.htm?ym='.$v['url'];
+                    return $client->getAsync($url,[
+                        'headers' => [
+                            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)'
+                        ]
+                    ]);
+                };
+            }
+        };
+
+        //创建线程池
+        $pool = new \GuzzleHttp\Pool($client, $requests(),[
+            'concurrency'=>20,
+            'fulfilled'=>function($response, $index){
+                if($response->getStatusCode() == '200'){
+                    $body = $response->getBody()->getContents();
+                    $body = mb_convert_encoding($body, 'utf-8', 'gbk');
+                    preg_match_all("/域名注册时间[\s\S]*?<td>(.*?)<[\s\S]*域名到期时间[\s\S]*?<td>(.*?)<[\s\S]*域名实际注册商[\s\S]*?<td>(.*?)</",$body,$match);
+
+                    $this->db->where('id='.$this->url_list[$index]['id'])->update('juming_url_id_list',[
+                        'regist_time'=>$match[1][0],
+                        'expire_time'=>$match[2][0],
+                        'register'=>$match[3][0]
+                    ],1);
+                    echo 'url: '.$this->url_list[$index]['url'].' detail ok'."\n";
+                }else{
+                    echo 'body: code!=200 url: '.$this->url_list[$index]['url'].' detail fail'."\n";
+                }
+
+            },
+            'rejected' => function($reason, $index){
+                echo 'body: code!=200 url: '.$this->url_list[$index]['url'].' detail fail'."\n";
+            }
+        ]);
+        $promise = $pool->promise();
+        $promise->wait();
+        echo "get detail over \n";
     }
 
     private function getPwd($pwd, $code){
