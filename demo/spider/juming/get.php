@@ -34,13 +34,16 @@ class juming{
 
     public function run(){
         //登陆
-        //$this->login();
+        $this->login();
         //获取域名列表
-        //$this->getUrlId();
+        $this->getUrlId();
         //微信封禁检测
         $this->getUrlList();
-        //$this->checkWxState();
+        $this->checkWxState();
+        //获取详细信息
         $this->getDetailInfo();
+        //导出
+        $this->export();
     }
 
     public function login(){
@@ -123,6 +126,15 @@ class juming{
         $this->url_list = $this->db->get('juming_url_id_list');
     }
 
+    public function export(){
+        $data = $this->db->where('wx_state=1')->get('juming_url_id_list',null,['url','price','regist_time','expire_time','register']);
+        $header = ['域名','价格','域名注册时间','域名到期时间','域名注册商','域名购买地址'];
+        foreach ($data as $k=>$v){
+            $data[$k]['buy_url']='http://www.juming.com/mai_yes.htm?ym='.$v['url'];
+        }
+        excel_export_data($data,$header,'list.csv',2);
+        echo "export over \n";
+    }
     public function checkWxState(){
 
         $client = $this->client;

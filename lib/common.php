@@ -203,3 +203,42 @@ function arrayMergBy2($old, $new)
     }
     return $old;
 }
+
+/**
+ * use for:导出 csv
+ * auth: Joql
+ * @param $data
+ * @param null $header
+ * @param string $fileName
+ * date:2018-06-17 10:56
+ * type 1 web下载  2 自动保存
+ */
+function excel_export_data($data, $header=null, $fileName='example.csv',$type = 1) {
+
+    // 如果手动设置表头；则放在第一行
+    if (!is_null($header)) {
+        array_unshift($data, $header);
+    }
+
+    //header设置
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition:filename=' . $fileName);
+
+    //输出10MB大小数据到是保存在内存中，如果它超过设置值，则自动写入临时文件
+    $csv = fopen('php://temp/maxmemory:' . (100 * 1024 * 1024), 'r+');
+
+    //添加BOM来修复UTF-8乱码
+    fputs($csv, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
+    foreach ($data as $v) {
+        fputcsv($csv, $v);
+    }
+    rewind($csv);
+    if($type == 1){
+        exit(stream_get_contents($csv));
+    }else{
+        $file_open = fopen($fileName,'w');
+        fwrite($file_open,stream_get_contents($csv));
+        fclose($file_open);
+    }
+}
+//二
