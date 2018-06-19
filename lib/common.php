@@ -220,9 +220,7 @@ function excel_export_data($data, $header=null, $fileName='example.csv',$type = 
         array_unshift($data, $header);
     }
 
-    //header设置
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition:filename=' . $fileName);
+
 
     //输出10MB大小数据到是保存在内存中，如果它超过设置值，则自动写入临时文件
     $csv = fopen('php://temp/maxmemory:' . (100 * 1024 * 1024), 'r+');
@@ -234,6 +232,9 @@ function excel_export_data($data, $header=null, $fileName='example.csv',$type = 
     }
     rewind($csv);
     if($type == 1){
+        //header设置
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition:filename=' . $fileName);
         exit(stream_get_contents($csv));
     }else{
         $file_open = fopen($fileName,'w');
