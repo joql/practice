@@ -29,4 +29,5 @@
 - parse-app 包解析 android ios[[成品分发系统demo](https://github.com/joql/ff-fgn)]
 - datatables 
 - qiniu fetch抓取第三方图片
+- imagick
 

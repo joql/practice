@@ -6,17 +6,10 @@
  * Time: 22:08
  */
 
-
-
-//仅能在cli模式下运行
-/*
- * windows 安装 imagick
- * php ext 目录下 增加 php_imagick.dll
- * 修改 php.ini
- * */
 require 'init.php';
 error_reporting(E_ALL);
 
+//仅能在cli模式下运行
 
 $s = pdf2png('public/uploads/132.pdf','./');
 echo '<div align="center"><img src="'.$s.'"></div>';

@@ -12,8 +12,10 @@ define('LIB_ROOT',dirname(__FILE__).'/lib/');
 
 require LIB_ROOT.'common.php';
 require 'vendor/autoload.php';
-//require LIB_ROOT.'curl.class.php';
 
+//header("content-type:text/html;charset=utf-8");
+//require LIB_ROOT.'curl.class.php';
+//header("Content-type:text/html;charset=utf-8");
 
 //******连接数据库************
 $db  = new MysqliDb([
