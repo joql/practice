@@ -181,6 +181,50 @@ class juming{
         $promise->wait();
         echo "wx checked over \n";
     }
+    public function checkQqState(){
+
+        $client = $this->client;
+        //创建请求
+        $requests = function () use ($client){
+            foreach ($this->url_list as $v){
+                yield function () use ($client, $v){
+                    $url = 'http://www.juming.com/mai_yes.htm?id='.$v['url_id'].'&_='.time().'897&qqjc=y';
+                    return $client->getAsync($url,[
+                        'headers' => [
+                            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)'
+                        ]
+                    ]);
+                };
+            }
+        };
+
+        //创建线程池
+        $pool = new \GuzzleHttp\Pool($client, $requests(),[
+            'concurrency'=>$this->theads,
+            'fulfilled'=>function($response, $index){
+                if($response->getStatusCode() == '200'){
+                    $body = $response->getBody()->getContents();
+                    $body = mb_convert_encoding($body, 'utf-8', 'gbk');
+                    if(mb_strpos($body,'未拦截') !== false){
+                        $this->db->where('id='.$this->url_list[$index]['id'])->update('juming_url_id_list',['qq_state'=>1],1);
+                        echo 'body-qq: '.$body.' url: '.$this->url_list[$index]['url'].'  ok'."\n";
+                    }else{
+                        $this->db->where('id='.$this->url_list[$index]['id'])->update('juming_url_id_list',['qq_state'=>0],1);
+                        echo 'body-qq: '.$body.' url: '.$this->url_list[$index]['url'].'  fail'."\n";
+                    }
+                }else{
+                    echo 'body-qq: code!=200 url: '.$this->url_list[$index]['url'].'  fail'."\n";
+                }
+
+            },
+            'rejected' => function($reason, $index){
+                echo 'body-qq: code!=200 url: '.$this->url_list[$index]['url'].'  fail'."\n";
+            }
+        ]);
+        $promise = $pool->promise();
+        $promise->wait();
+        echo "qq checked over \n";
+    }
     public function check360State(){
 
         $client = $this->client;
