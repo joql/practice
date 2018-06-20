@@ -12,26 +12,88 @@ require_once '../qiniu/auth.php';
 use GuzzleHttp\Client;
 
 //$db->insert()
-$yueru = new YueRu(new \GuzzleHttp\Client(), $db);
-$yueru->run();
+$log = new \Monolog\Logger('yueru');
+$log->pushHandler(new \Monolog\Handler\StreamHandler('../../public/log/demo-yueru.log',\Monolog\Logger::INFO));
+
+
+$yueru = new YueRu(new \GuzzleHttp\Client(), $db, $log);
+
+if($argv[1]){
+    $yueru->run($argv[1]);
+    //多线程修改任务状态
+    $db->where('state=1 and task='.$argv[1])->update('task_list',['state'=>2]);
+}
 
 
 class YueRu
 {
     public $client;// guzzlehttp
     public $db;//mysqldb
+    private $log;//log
     private $room_data;//房间信息
     private $friend_room_no;//其他房间号
 
-    public function __construct($client, $db)
+    public function __construct($client, $db, $log)
     {
         $this->client = $client;
         $this->db = $db;
+        $this->log = $log;
     }
 
-    public function run(){
+    public function run($room_no){
 
-        for ($i=847;$i<3000;$i++){
+        unset($this->room_data);
+        unset($this->friend_room_no);
+        unset($result_pic);
+        unset($result_user_in);
+        $url = 'http://m.yueru.com/Send/Post/api/Room/GetRoomInfoByIRoomNo';
+        $parm = [
+            'iroomNo'=>'ZZ'.sprintf('%08d',$room_no).'A'
+        ];
+        if($this->getRoomData($url, $parm) !== false){
+            //检测房间是否存在
+            if($this->db->where('room_no=\''.$parm['iroomNo'].'\'')->has('yueru_room')){
+                $this->log->info('房间 '.$parm['iroomNo'].' 已存在');
+                return false;
+            }
+            if(empty($this->room_data['ObjectData']['RoomSignText'])){
+                $this->log->info('房间 '.$parm['iroomNo'].' 信息获取失败');
+                return false;
+            }
+            //保存房间信息
+            $this->saveRoom() === false ? $this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 保存失败'):$this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 保存成功');
+            //保存图片信息
+            $result_pic = $this->savePic();
+            $result_pic === false ? $this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 图片保存失败'):$this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO']." 成功保存".count($result_pic).'张图片');
+            //保存入住信息
+            $result_user_in = $this->saveFriendInfo();
+
+            $result_user_in === false ? $this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['RoomNO'].' 用户入住信息保存失败'):$this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['RoomNO']." 成功保存".count($result_user_in).'位入住信息');
+            //获取朋友房间
+            $this->getFriendRoomNo();
+            foreach ($this->friend_room_no as $v){
+                unset($result_pic);
+                unset($this->room_data);
+                unset($parm);
+                $parm = [
+                    'iroomNo'=>$v
+                ];
+                if($this->getRoomData($url, $parm) !== false){
+                    $this->saveRoom() === false ? $this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 保存失败'):$this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 保存成功');
+                    //保存图片信息
+                    $result_pic = $this->savePic();
+                    $result_pic === false ? $this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 图片保存失败'):$this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO']." 成功保存".count($result_pic).'张图片');
+                }else{
+                    $this->log->info('房间 '.$v.' 信息获取失败');
+                    continue;
+                }
+            }
+        }
+
+    }
+    public function run1(){
+
+        for ($i=1666;$i<3000;$i++){
             unset($this->room_data);
             unset($this->friend_room_no);
             unset($result_pic);
@@ -44,18 +106,23 @@ class YueRu
 
             if($this->getRoomData($url, $parm) !== false){
                 //检测房间是否存在
+                if($this->db->where('room_no=\''.$parm['iroomNo'].'\'')->has('yueru_room')){
+                    $this->log->info('房间 '.$parm['iroomNo'].' 已存在');
+                    continue;
+                }
                 if(empty($this->room_data['ObjectData']['RoomSignText'])){
+                    $this->log->info('房间 '.$parm['iroomNo'].' 信息获取失败');
                     continue;
                 }
                 //保存房间信息
-                $this->saveRoom() === false ? $this->console('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 保存失败'):$this->console('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 保存成功');
+                $this->saveRoom() === false ? $this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 保存失败'):$this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 保存成功');
                 //保存图片信息
                 $result_pic = $this->savePic();
-                $result_pic === false ? $this->console('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 图片保存失败'):$this->console('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO']." 成功保存".count($result_pic).'张图片');
+                $result_pic === false ? $this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 图片保存失败'):$this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO']." 成功保存".count($result_pic).'张图片');
                 //保存入住信息
                 $result_user_in = $this->saveFriendInfo();
 
-                $result_user_in === false ? $this->console('房间 '.$this->room_data['ObjectData']['VRoomInfo']['RoomNO'].' 用户入住信息保存失败'):$this->console('房间 '.$this->room_data['ObjectData']['VRoomInfo']['RoomNO']." 成功保存".count($result_user_in).'位入住信息');
+                $result_user_in === false ? $this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['RoomNO'].' 用户入住信息保存失败'):$this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['RoomNO']." 成功保存".count($result_user_in).'位入住信息');
                 //获取朋友房间
                 $this->getFriendRoomNo();
                 foreach ($this->friend_room_no as $v){
@@ -66,12 +133,12 @@ class YueRu
                         'iroomNo'=>$v
                     ];
                     if($this->getRoomData($url, $parm) !== false){
-                        $this->saveRoom() === false ? $this->console('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 保存失败'):$this->console('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 保存成功');
+                        $this->saveRoom() === false ? $this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 保存失败'):$this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 保存成功');
                         //保存图片信息
                         $result_pic = $this->savePic();
-                        $result_pic === false ? $this->console('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 图片保存失败'):$this->console('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO']." 成功保存".count($result_pic).'张图片');
+                        $result_pic === false ? $this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO'].' 图片保存失败'):$this->log->info('房间 '.$this->room_data['ObjectData']['VRoomInfo']['IRoomNO']." 成功保存".count($result_pic).'张图片');
                     }else{
-                        $this->console('房间 '.$v.' 信息获取失败');
+                        $this->log->info('房间 '.$v.' 信息获取失败');
                         continue;
                     }
                 }
@@ -200,7 +267,7 @@ class YueRu
                     'profession'=>$v['Profession'],
                     'loves'=>$v['Loves']
                 ];
-                $this->console('用户 '.$v['CustName'].' 加入保存队列');
+                $this->log->info('用户 '.$v['CustName'].' 加入保存队列');
             }else{
                 continue;
             }
@@ -222,65 +289,50 @@ class YueRu
         $save = [];
         //房间图片
         foreach ($this->room_data['ObjectData']['PicList'] as $picv){
-            //检测图片是否存在并转换
-            if($this->db->where('pic_id='.$picv['PicID'])->has('yueru_room_pic')){
-                $this->console('图片 '.$picv['PicID'].' 已存在');
-                continue;
+            //转换
+            $pic_url = $this->getQiNiuPicUrl('http://m.yueru.com'.$picv['PicUrl']);
+            if($pic_url === false){
+                $this->log->info('图片 '.$picv['PicID'].' 转存七牛云失败');
             }else{
-                $pic_url = $this->getQiNiuPicUrl('http://m.yueru.com'.$picv['PicUrl']);
-                if($pic_url === false){
-                    $this->console('图片 '.$picv['PicID'].' 转存七牛云失败');
-                }else{
-                    $save[] = [
-                        'room_no' => $this->room_data['ObjectData']['VRoomInfo']['IRoomNO'],
-                        'pic_id'=> $picv['PicID'],
-                        'pic_url'=> $pic_url,
-                        'addtime'=>strtotime($picv['UploadTime'])
-                    ];
-                    $this->console('图片 '.$picv['PicID'].' 加入队列成功');
-                }
+                $save[] = [
+                    'room_no' => $this->room_data['ObjectData']['VRoomInfo']['IRoomNO'],
+                    'pic_id'=> $picv['PicID'],
+                    'pic_url'=> $pic_url,
+                    'addtime'=>strtotime($picv['UploadTime'])
+                ];
+                $this->log->info('图片 '.$picv['PicID'].' 加入队列成功');
             }
         }
         //公共区域图片
         foreach ($this->room_data['ObjectData']['PublicList'] as $ppicv){
             //检测图片是否存在并转换
-            if($this->db->where('pic_id='.$ppicv['PicID'])->has('yueru_room_pic')){
-                $this->console('图片 '.$ppicv['PicID'].' 已存在');
-                continue;
+            $pic_url = $this->getQiNiuPicUrl('http://m.yueru.com'.$ppicv['PicUrl']);
+            if($pic_url === false){
+                $this->log->info('图片 '.$ppicv['PicID'].' 转存七牛云失败');
             }else{
-                $pic_url = $this->getQiNiuPicUrl('http://m.yueru.com'.$ppicv['PicUrl']);
-                if($pic_url === false){
-                    $this->console('图片 '.$ppicv['PicID'].' 转存七牛云失败');
-                }else{
-                    $save[] = [
-                        'room_no' => $this->room_data['ObjectData']['VRoomInfo']['IRoomNO'],
-                        'pic_id'=> $ppicv['PicID'],
-                        'pic_url'=> $pic_url,
-                        'addtime'=>strtotime($ppicv['UploadTime'])
-                    ];
-                    $this->console('图片 '.$ppicv['PicID'].' 加入队列成功');
-                }
+                $save[] = [
+                    'room_no' => $this->room_data['ObjectData']['VRoomInfo']['IRoomNO'],
+                    'pic_id'=> $ppicv['PicID'],
+                    'pic_url'=> $pic_url,
+                    'addtime'=>strtotime($ppicv['UploadTime'])
+                ];
+                $this->log->info('图片 '.$ppicv['PicID'].' 加入队列成功');
             }
         }
         //小区图片
         foreach ($this->room_data['ObjectData']['LpPicList'] as $lpicv){
             //检测图片是否存在并转换
-            if($this->db->where('pic_id='.$lpicv['PicID'])->has('yueru_room_pic')){
-                $this->console('图片 '.$lpicv['PicID'].' 已存在');
-                continue;
+            $pic_url = $this->getQiNiuPicUrl('http://m.yueru.com'.$lpicv['PicUrl']);
+            if($pic_url === false){
+                $this->log->info('图片 '.$lpicv['PicID'].' 转存七牛云失败');
             }else{
-                $pic_url = $this->getQiNiuPicUrl('http://m.yueru.com'.$lpicv['PicUrl']);
-                if($pic_url === false){
-                    $this->console('图片 '.$lpicv['PicID'].' 转存七牛云失败');
-                }else{
-                    $save[] = [
-                        'room_no' => $this->room_data['ObjectData']['VRoomInfo']['IRoomNO'],
-                        'pic_id'=> $lpicv['PicID'],
-                        'pic_url'=> $pic_url,
-                        'addtime'=>strtotime($lpicv['UploadTime'])
-                    ];
-                    $this->console('图片 '.$lpicv['PicID'].' 加入队列成功');
-                }
+                $save[] = [
+                    'room_no' => $this->room_data['ObjectData']['VRoomInfo']['IRoomNO'],
+                    'pic_id'=> $lpicv['PicID'],
+                    'pic_url'=> $pic_url,
+                    'addtime'=>strtotime($lpicv['UploadTime'])
+                ];
+                $this->log->info('图片 '.$lpicv['PicID'].' 加入队列成功');
             }
         }
 

@@ -242,4 +242,14 @@ function excel_export_data($data, $header=null, $fileName='example.csv',$type = 
         fclose($file_open);
     }
 }
+
+/**
+ * use for:控制台输出格式化
+ * auth: Joql
+ * @param $data
+ * date:2018-06-20 9:29
+ */
+function console($data){
+    echo date('Y-m-d H:i:s').": $data\n";
+}
 //二
