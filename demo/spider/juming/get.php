@@ -42,6 +42,8 @@ class juming{
         $this->checkWxState();
         //获取详细信息
         $this->getDetailInfo();
+
+        //$this->check360State();
         //导出
         $this->export();
     }
@@ -161,18 +163,87 @@ class juming{
                     $body = mb_convert_encoding($body, 'utf-8', 'gbk');
                     if(mb_strpos($body,'未拦截') !== false){
                         $this->db->where('id='.$this->url_list[$index]['id'])->update('juming_url_id_list',['wx_state'=>1],1);
-                        echo 'body: '.$body.' url: '.$this->url_list[$index]['url'].'  ok'."\n";
+                        echo 'body-wx: '.$body.' url: '.$this->url_list[$index]['url'].'  ok'."\n";
                     }else{
                         $this->db->where('id='.$this->url_list[$index]['id'])->update('juming_url_id_list',['wx_state'=>0],1);
-                        echo 'body: '.$body.' url: '.$this->url_list[$index]['url'].'  fail'."\n";
+                        echo 'body-wx: '.$body.' url: '.$this->url_list[$index]['url'].'  fail'."\n";
                     }
                 }else{
-                    echo 'body: code!=200 url: '.$this->url_list[$index]['url'].'  fail'."\n";
+                    echo 'body-wx: code!=200 url: '.$this->url_list[$index]['url'].'  fail'."\n";
                 }
 
             },
             'rejected' => function($reason, $index){
-                echo 'body: code!=200 url: '.$this->url_list[$index]['url'].'  fail'."\n";
+                echo 'body-wx: code!=200 url: '.$this->url_list[$index]['url'].'  fail'."\n";
+            }
+        ]);
+        $promise = $pool->promise();
+        $promise->wait();
+        echo "wx checked over \n";
+    }
+    public function check360State(){
+
+        $client = $this->client;
+        //创建请求
+        $requests = function () use ($client){
+            foreach ($this->url_list as $v){
+                yield function () use ($client, $v){
+                    $url = 'http://webscan.360.cn/index/checkwebsite?url='.$v['url'];
+                    return $client->getAsync($url,[
+                        'headers' => [
+                            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)'
+                        ]
+                    ]);
+                };
+            }
+        };
+
+        //创建线程池
+        $pool = new \GuzzleHttp\Pool($client, $requests(),[
+            'concurrency'=>1,
+            'fulfilled'=>function($response, $index){
+                if($response->getStatusCode() == '200'){
+                    sleep(2);
+                    $body = $response->getBody()->getContents();
+                    preg_match_all('/token=(.*)?&time=(.*)\"/',$body,$match);
+                    echo $match[1][0].' '.$match[2][0]."\n";
+                    /*if(empty($match[1][0])){
+                        echo 'body-360: no 360 token url: '.$this->url_list[$index]['url'].'  fail'."\n";
+                    }else{
+                        $tmp = $this->client->post('http://webscan.360.cn/index/gettrojan',[
+                            'form_params'=>[
+                                'url'=>$this->url_list[$index]['url'],
+                                'token'=>$match[1][0],
+                                'time'=>$match[2][0]
+                            ]
+                        ]);
+                        if($tmp->getStatusCode() != 200){
+                            echo 'body-360:  url: '.$this->url_list[$index]['url'].'  fail'."\n";
+                        }else{
+                            die($tmp->getBody()->getContents());
+                            $body2 = json_decode($tmp->getBody()->getContents(),true);
+                            if($body2['kx']['state'] == 1){
+                                echo 'body-360:  url: '.$this->url_list[$index]['url'].'  ok'."\n";
+                            }else{
+                                echo 'body-360:  url: '.$this->url_list[$index]['url'].'  ban'."\n";
+                            }
+
+                        }
+                    }*/
+                    /*if(mb_strpos($body,'未拦截') !== false){
+                        $this->db->where('id='.$this->url_list[$index]['id'])->update('juming_url_id_list',['wx_state'=>1],1);
+                        echo 'body: '.$body.' url: '.$this->url_list[$index]['url'].'  ok'."\n";
+                    }else{
+                        $this->db->where('id='.$this->url_list[$index]['id'])->update('juming_url_id_list',['wx_state'=>0],1);
+                        echo 'body: '.$body.' url: '.$this->url_list[$index]['url'].'  fail'."\n";
+                    }*/
+                }else{
+                    echo 'body-360: code!=200 url: '.$this->url_list[$index]['url'].'  fail'."\n";
+                }
+
+            },
+            'rejected' => function($reason, $index){
+                echo 'body-360: code!=200 url: '.$this->url_list[$index]['url'].'  fail'."\n";
             }
         ]);
         $promise = $pool->promise();
