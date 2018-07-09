@@ -15,8 +15,30 @@ use GuzzleHttp\Cookie\CookieJar;
 error_reporting(E_ALL & ~E_NOTICE);
 global $db;
 
+if(!empty($argv[1])){
+    $act = $argv[1];
+}
+if(!empty($_GET['act'])){
+    $act = $_GET['act'];
+}
+
 $juming = new juming($db);
-$juming->run();
+switch ($act){
+    case 'get':
+        //登陆
+        $juming->login();
+        //获取域名列表
+        $juming->getUrlId();
+        //微信封禁检测
+        $juming->getUrlList();
+        $juming->checkWxState();
+        //获取详细信息
+        $juming->getDetailInfo();
+        break;
+    case 'export':
+        $juming->export(1);
+        break;
+}
 
 class juming{
     private $client;
@@ -45,7 +67,7 @@ class juming{
 
         //$this->check360State();
         //导出
-        $this->export();
+        $this->export(2);
     }
 
     public function login(){
@@ -96,6 +118,7 @@ class juming{
      * date:2018-06-16 22:21
      */
     public function getUrlId(){
+        $this->db->delete('juming_url_id_list');
         $list= array();
         for($i=1;$i<=90;$i++){
             $url = 'http://www.juming.com/ykj/?api_sou=1&sfba=1999&ymlx=0&qian2=100&jgpx=0&meiye=&page='.$i.'&_='.time().'176';
@@ -128,13 +151,13 @@ class juming{
         $this->url_list = $this->db->get('juming_url_id_list');
     }
 
-    public function export(){
+    public function export($type){
         $data = $this->db->where('wx_state=1')->get('juming_url_id_list',null,['url','price','regist_time','expire_time','register']);
         $header = ['域名','价格','域名注册时间','域名到期时间','域名注册商','域名购买地址'];
         foreach ($data as $k=>$v){
             $data[$k]['buy_url']='http://www.juming.com/mai_yes.htm?ym='.$v['url'];
         }
-        excel_export_data($data,$header,'list.csv',2);
+        excel_export_data($data,$header,'list.csv',$type);
         echo "export over \n";
     }
     public function checkWxState(){
