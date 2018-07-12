@@ -9,7 +9,9 @@
 require '../../../init.php';
 
 
+ini_set('memory_limit', '-1');
 
+echo 'run start';
 $names = new getName('./1.txt');
 $names->getName();
 $names->save();
@@ -36,8 +38,17 @@ class getName
         $count_find = 0;
         foreach ($line as $v){
             $name = explode('	',$v);
-            echo "get : ".$name['1']." \n";
+            if(mb_strlen($name[1],'utf8') < 6){
+                continue;
+            }
+            preg_match_all("/[\x{4e00}-\x{9fa5}]/u",$name[1],$match);
+            if(count($match[0]) < 3){
+                continue;
+            }
+            $count_find ++ ;
+            echo "get : id ".$count_find.', name '.$name['1']." \n";
             $this->name_list[] = $name[1];
+            unset($match);
         }
     }
 
