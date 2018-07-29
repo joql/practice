@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>网站监控[17ce]</title>
+    <link rel="stylesheet" href="../../public/asset/layui/css/layui.css">
+    <style>
+        .layui-container{
+            margin-top: 20px;
+        }
+        li {
+            list-style:none; /* 将默认的列表符号去掉 */
+            padding:0; /* 将默认的内边距去掉 */
+            margin:0 ; /* 将默认的外边距去掉 */
+            float: left;
+        }
+        .mobal{
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-container">
+    <div class="layui-collapse" lay-accordion="">
+    </div>
+</div>
+</body>
+
+<div class="mobal">
+    <div class="layui-colla-item">
+        <h2 class="layui-colla-title">
+            <ul>
+                <li class="layui-col-md2">序号</li>
+                <li class="layui-col-md3">域名</li>
+                <li class="layui-col-md2">监测点总数</li>
+                <li class="layui-col-md2">成功总数</li>
+                <li class="layui-col-md2">加载中</li>
+            </ul>
+        </h2>
+        <div class="layui-colla-content layui-show">
+            <div class="map" style="width: 1000px;height:400px;">
+
+            </div>
+        </div>
+    </div>
+</div>
+<script type="application/javascript" src="../../public/js/jquery.min.js"></script>
+<script src="../../public/asset/layui/layui.js"></script>
+<script src="echarts.min.js"></script>
+<script src="china.js"></script>
+<script type="text/javascript">
+
+    //var ws,url_list=[{'prot':'http','url':'www.baidu.com'}],url_results=Array();
+    var ws,url_list=[{'prot':'http','url':'www.kylinqi.cn'},{'prot':'http','url':'www.baidu.com'}],url_results=Array(),element,layer;
+
+    layui.use(['element', 'layer'], function(){
+         element = layui.element;
+         layer = layui.layer;
+
+
+        init();
+    });
+
+    function init() {
+//        $.ajax({
+//            url:"api.php?act=checkUser",
+//            type:"post",
+//            data:{
+//                'url' : 'www.baidu.com',
+//                'type' : 'http',
+//                'isp' : 0,
+//            },
+//            async: false,
+//            dataType:"json",
+//            success:function(data){
+//                if(data.code == 1){
+//                    var result = data.data,url;
+//                    if(result.rt){
+//                        adlist = result['data']['adlist'];
+//                        nodelink = result['data']['nodelink'];
+//                        ips = result['data']['fullips'];
+//                        res = {'rt':result['rt'], 'data':{'user':result['data']['user'], 'code':result['data']['code'], 'ut':result['data']['ut']}};
+//                        url='wss://wsapi.17ce.com:8001/socket/?' + setUrlK(res.data);
+//                        wsq(url);
+//                    }
+//                }
+//            },
+//            error:function(xmlHttpRequest,textStatus,errorThrown){
+//                console.log(textStatus+"出错！"+errorThrown);
+//            }
+//        });
+
+        $.each(url_list,function (k,i) {
+            $('.layui-collapse').append($('.mobal').html());
+            $('.layui-collapse .layui-colla-item:last').addClass('mobal'+(k+1));
+            $('.layui-collapse .mobal'+(k+1)).removeClass('mobal');
+            $('.layui-collapse .mobal'+(k+1)+' li')[0].innerText = k+1;
+            $('.layui-collapse .mobal'+(k+1)+' li')[1].innerText = i.url;
+
+            //加载地图
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init($('.layui-collapse .mobal'+(k+1)+' .map')[0]);
+
+            // 指定图表的配置项和数据
+
+            var tmap = {
+                backgroundColor: '#F3FBFF',
+                title: {
+                    text: '',
+                    x: 'center'
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}<br/>测试时间 ：{c} ms'
+                },
+                legend: {
+                    show: false,
+                    orient: 'vertical',
+                    x: 'left',
+                    data: ['测试时间']
+                },
+                dataRange: {
+                    x: '1080px',
+                    y: '300px',
+                    splitList: [
+                        {start: 100, label: '差'},
+                        {start: 50, end: 100, label: '较差'},
+                        {start: 30, end: 50, label: '警告'},
+                        {start: 10, end: 30, label: '较好'},
+                        {end: 10, label: '好'}
+                    ],
+                    color: ['#D50000', '#FF6600', '#ECEC00','#00FF40','#008000']
+                },
+                series: [{
+                    name: '测试时间',
+                    type: 'map',
+                    mapType: 'china',
+                    roam: false,
+                    itemStyle: {
+                        normal: {
+                            label: {
+                                show: true,
+                                textStyle: {
+                                    color: "#000"
+                                }
+                            }
+                        },
+                        emphasis: {
+                            label: {
+                                show: true
+                            }
+                        }
+                    },
+                    data: []
+                }]
+            };
+
+
+
+                var myChart1 = ec.init(document.getElementById('chinamap_time'));
+                myChart1.setOption(tmap);
+            }
+        );
+
+            var option = {
+                title: {
+                    text: '网站测速',
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}<br/>测试时间 ：{c} ms',
+                },
+                series: [
+                    {
+                    name: '测试时间',
+                    type: 'map',
+                    mapType: 'china',
+                    roam: false,
+                    itemStyle: {
+                        normal: {
+                            label: {
+                                show: true,
+                                textStyle: {
+                                    color: "#000"
+                                }
+                            }
+                        },
+                        emphasis: {
+                            label: {
+                                show: true
+                            }
+                        }
+                    },
+                    data: [
+                        {
+                            'name': '河南',// .replace('省','').replace('市',''),
+                            'value':  12312,
+                            'itemStyle': {
+                                normal: {
+                                    color: '#00FF40',
+                                    label: {
+                                        show: true,
+                                        textStyle: {
+                                            color: '#000'
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+                ]
+            };
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+        })
+        element.init();
+    }
+
+
+    function ws_send() {
+        $.each(url_list, function (k,i) {
+            var url=i['url'],prot=i['prot'];
+            console.log(ws)
+            ws.send('{"txnid":'+(k+1)+',"nodetype":1,"num":1,"Url":"'+prot+'://'+url+'","TestType":"'+prot.toUpperCase()+'","Host":"","TimeOut":10,"Request":"GET","NoCache":false,"Speed":0,"Cookie":"","Trace":false,"Referer":"","UserAgent":"","FollowLocation":2,"GetMD5":true,"GetResponseHeader":true,"MaxDown":1048576,"AutoDecompress":true,"type":1,"isps":[0,1,2,6,7,8,17,18,19,3,4],"pro_ids":[12,49,79,80,180,183,184,188,189,190,192,193,194,195,196,221,227,235,236,238,241,243,250,346,349,350,351,353,354,355,356,357,239,352],"areas":[0,1,2,3],"SnapShot":true,"postfield":"","PingCount":10,"PingSize":32,"SrcIP":""}')
+        })
+    }
+
+    function format_msg(data) {
+        if(data.type == 'NewData'){
+            if(typeof url_results[data.txnid] == 'undefined'){
+                url_results[data.txnid] = Array()
+                url_results[data.txnid].push(data.data);
+            }else{
+                url_results[data.txnid].push(data.data);
+            }
+        }else if (data.type == 'TaskEnd'){
+            url_results[data.txnid]['end'] = Array();
+            url_results[data.txnid]['end'] = data.data;
+
+            // 按时间中国地图
+            var tdata = listSortBy(mdata.time_backdata, 'NodeID.pro_id', 'asc');
+            for (var i in tdata) {
+                if(i>1){
+                    if(tdata[i]['NodeID']['province'] != tdata[i-1]['NodeID']['province']){
+                        if (tdata[i]['Avg']/1000 <10) {
+                            tmap.series[0].data.push({
+                                'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
+                                'value':  (tdata[i]['Avg']/1000).toFixed(3),
+                                'itemStyle': {
+                                    normal: {
+                                        color: '#008000',
+                                        label: {
+                                            show: true,
+                                            textStyle: {
+                                                color: '#000',
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        } else if (tdata[i]['Avg']/1000 >= 10 && tdata[i]['Avg']/1000 < 30) {
+                            tmap.series[0].data.push({
+                                'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
+                                'value':  (tdata[i]['Avg']/1000).toFixed(3),
+                                'itemStyle': {
+                                    normal: {
+                                        color: '#00FF40',
+                                        label: {
+                                            show: true,
+                                            textStyle: {
+                                                color: '#000'
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        } else if (tdata[i]['Avg']/1000 >= 30 && tdata[i]['Avg']/1000 < 50) {
+                            tmap.series[0].data.push({
+                                'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
+                                'value':  (tdata[i]['Avg']/1000).toFixed(3),
+                                'itemStyle': {
+                                    normal: {
+                                        color: '#ECEC00',
+                                        label: {
+                                            show: true,
+                                            textStyle: {
+                                                color: '#000'
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        } else if (tdata[i]['Avg']/1000 >= 50 && tdata[i]['Avg']/1000 < 100) {
+                            tmap.series[0].data.push({
+                                'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
+                                'value':  (tdata[i]['Avg']/1000).toFixed(3),
+                                'itemStyle': {
+                                    normal: {
+                                        color: '#FF6600',
+                                        label: {
+                                            show: true,
+                                            textStyle: {
+                                                color: '#000'
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        } else {
+                            tmap.series[0].data.push({
+                                'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
+                                'value':  (tdata[i]['Avg']/1000).toFixed(3),
+                                'itemStyle': {
+                                    normal: {
+                                        color: '#D50000',
+                                        label: {
+                                            show: true,
+                                            textStyle: {
+                                                color: '#000',
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        };
+                    }
+                }else{
+                    if (tdata[i]['Avg']/1000 <10) {
+                        tmap.series[0].data.push({
+                            'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
+                            'value':  (tdata[i]['Avg']/1000).toFixed(3),
+                            'itemStyle': {
+                                normal: {
+                                    color: '#008000',
+                                    label: {
+                                        show: true,
+                                        textStyle: {
+                                            color: '#000'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else if (tdata[i]['Avg']/1000 >= 10 && tdata[i]['Avg']/1000 < 30) {
+                        tmap.series[0].data.push({
+                            'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
+                            'value':  (tdata[i]['Avg']/1000).toFixed(3),
+                            'itemStyle': {
+                                normal: {
+                                    color: '#00FF40',
+                                    label: {
+                                        show: true,
+                                        textStyle: {
+                                            color: '#000'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else if (tdata[i]['Avg']/1000 >= 30 && tdata[i]['Avg']/1000 < 50) {
+                        tmap.series[0].data.push({
+                            'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
+                            'value':  (tdata[i]['Avg']/1000).toFixed(3),
+                            'itemStyle': {
+                                normal: {
+                                    color: '#ECEC00',
+                                    label: {
+                                        show: true,
+                                        textStyle: {
+                                            color: '#000'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else if (tdata[i]['Avg']/1000 >= 50 && tdata[i]['Avg']/1000 < 100) {
+                        tmap.series[0].data.push({
+                            'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
+                            'value':  (tdata[i]['Avg']/1000).toFixed(3),
+                            'itemStyle': {
+                                normal: {
+                                    color: '#FF6600',
+                                    label: {
+                                        show: true,
+                                        textStyle: {
+                                            color: '#000'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        tmap.series[0].data.push({
+                            'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
+                            'value':  (tdata[i]['Avg']/1000).toFixed(3),
+                            'itemStyle': {
+                                normal: {
+                                    color: '#D50000',
+                                    label: {
+                                        show: true,
+                                        textStyle: {
+                                            color: '#000'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    };
+                }
+            }
+        }
+        console.log(url_results);
+    }
+    function wsq(url) {
+        // 创建一个Socket实例
+        ws = new WebSocket(url);
+
+        // 打开Socket
+        ws.onopen = ws_send;
+        ws.onmessage = function(event) {
+            format_msg(JSON.parse(event.data));
+            //console.log('Client received a message',event);
+        };
+
+        // 监听Socket的关闭
+        ws.onclose = function(event) {
+            console.log('Client notified socket has closed',event);
+        };
+    }
+    //json转url参数 setUrlK({name:"a"},true编码)
+    function setUrlK(ojson) {
+        var s='',name, key;
+        for(var p in ojson) {
+            if(!ojson[p]) {return null;}
+            if(ojson.hasOwnProperty(p)) { name = p };
+            key = ojson[p];
+            s += "&" + name + "=" + encodeURIComponent(key);
+        };
+        return s.substring(1,s.length);
+    };
+
+    function listSortBy(arr, field, order){
+        var refer = [], result=[], order = order=='asc'?'asc':'desc', index;
+        for(var i in arr){
+            refer[i] = arr[i][field]+':'+i;
+        }
+        refer.sort();
+        if(order=='desc') refer.reverse();
+        for(var j in refer){
+            index = refer[j].split(':')[1];
+            result[j] = arr[index];
+        }
+        return result;
+    }
+</script>
+</html>
