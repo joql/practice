@@ -29,14 +29,15 @@ switch ($act){
         $juming->login();
         //获取域名列表
         $juming->getUrlId();
-        //微信封禁检测
         $juming->getUrlList();
+        //qq微信封禁检测
         $juming->checkWxState();
+        $juming->checkQqState();
         //获取详细信息
         $juming->getDetailInfo();
         break;
     case 'export':
-        $juming->export(1);
+        $juming->export(2);
         break;
 }
 
@@ -120,8 +121,8 @@ class juming{
     public function getUrlId(){
         $this->db->delete('juming_url_id_list');
         $list= array();
-        for($i=1;$i<=90;$i++){
-            $url = 'http://www.juming.com/ykj/?api_sou=1&sfba=1999&ymlx=0&qian2=100&jgpx=0&meiye=&page='.$i.'&_='.time().'176';
+        for($i=1;$i<=30;$i++){
+            $url = 'http://www.juming.com/ykj/?api_sou=1&sfba=1999&dqsj=180&ymlx=0&qian1=80&qian2=100&changdu2=8&jgpx=0&meiye=0&page='.$i.'&_='.time().'176';
             $cookieJar = CookieJar::fromArray([
                 $this->cookie[0] => $this->cookie[1]
             ], 'www.juming.com');  // 此处记得请求域名需要保持跟请求的url host一致，否则不会携带此cookie。
@@ -152,7 +153,7 @@ class juming{
     }
 
     public function export($type){
-        $data = $this->db->where('wx_state=1')->get('juming_url_id_list',null,['url','price','regist_time','expire_time','register']);
+        $data = $this->db->where('wx_state=1 and qq_state=1')->get('juming_url_id_list',null,['url','price','regist_time','expire_time','register']);
         $header = ['域名','价格','域名注册时间','域名到期时间','域名注册商','域名购买地址'];
         foreach ($data as $k=>$v){
             $data[$k]['buy_url']='http://www.juming.com/mai_yes.htm?ym='.$v['url'];
