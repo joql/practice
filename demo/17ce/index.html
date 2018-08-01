@@ -173,7 +173,7 @@
             $('.layui-collapse .mobal'+(k+1)+' li')[1].innerText = i.name;
             $('.layui-collapse .mobal'+(k+1)+' li')[2].innerText = i.url;
             $('.layui-collapse .mobal'+(k+1)+' li button').attr('onClick','delUrl('+i.id+')');
-
+            $('.mobal'+(k+1)+' .map').css('width',$('.mobal'+(k+1)+' .layui-colla-content').width())
             }
         );
         element.init();
@@ -462,9 +462,9 @@
                 url_results[data.txnid]['end'] = Array();
                 url_results[data.txnid]['end'] = data.data;
                 draw_map(data.txnid);
-                $('.mobal'+(data.txnid)+' li')[2].innerText='监测点总数:'+data.data.TotalCount;
-                $('.mobal'+(data.txnid)+' li')[3].innerHTML='成功总数:<span style="color:green">'+data.data.TotalCountOK+'</span>';
-                $('.mobal'+(data.txnid)+' li')[4].innerText='检测完成';
+                $('.mobal'+(data.txnid)+' li')[3].innerText='监测点总数:'+data.data.TotalCount;
+                $('.mobal'+(data.txnid)+' li')[4].innerHTML='成功总数:<span style="color:green">'+data.data.TotalCountOK+'</span>';
+                $('.mobal'+(data.txnid)+' li')[5].innerText='检测完成';
                 $('.mobal'+(data.txnid)+' li.loading').css('color','green');
             }
         }
