@@ -17,10 +17,43 @@
         .mobal{
             display: none;
         }
+        .loading{
+            color: red;
+        }
     </style>
 </head>
 <body>
 <div class="layui-container">
+    <div>
+        <form class="layui-form" action="">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">协议类型</label>
+                    <div class="layui-input-inline">
+                        <select name="type">
+                            <option value="1">http</option>
+                            <option value="2">https</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">网址标题</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="name" lay-verify="required" autocomplete="off" placeholder="请输入网址标题" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">网址</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="url" lay-verify="required" autocomplete="off" placeholder="请输入网址" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
     <div class="layui-collapse" lay-accordion="">
     </div>
 </div>
@@ -30,15 +63,19 @@
     <div class="layui-colla-item">
         <h2 class="layui-colla-title">
             <ul>
-                <li class="layui-col-md2">序号</li>
-                <li class="layui-col-md3">域名</li>
-                <li class="layui-col-md2">监测点总数</li>
-                <li class="layui-col-md2">成功总数</li>
-                <li class="layui-col-md2">加载中</li>
+                <li class="layui-col-md1 layui-col-xs1">序号</li>
+                <li class="layui-col-md2 layui-col-xs2">站点监测</li>
+                <li class="layui-col-md2 layui-col-xs2">域名</li>
+                <li class="layui-col-md2 layui-col-xs2">监测点总数</li>
+                <li class="layui-col-md2 layui-col-xs2">成功总数</li>
+                <li class="layui-col-md2 layui-col-xs2 loading">加载中</li>
+                <li class="layui-col-md1 layui-col-xs1">
+                    <button class="layui-btn layui-btn-primary layui-btn-sm layui-btn-radius"><i class="layui-icon"></i></button>
+                </li>
             </ul>
         </h2>
         <div class="layui-colla-content layui-show">
-            <div class="map" style="width: 1000px;height:400px;">
+            <div class="map" style="width: 100%;height:400px;">
 
             </div>
         </div>
@@ -50,304 +87,211 @@
 <script src="china.js"></script>
 <script type="text/javascript">
 
-    //var ws,url_list=[{'prot':'http','url':'www.baidu.com'}],url_results=Array();
-    var ws,url_list=[{'prot':'http','url':'www.kylinqi.cn'},{'prot':'http','url':'www.baidu.com'}],url_results=Array(),element,layer;
+    var form,ws,url_list,url_results=Array(),element,layer,ips,adlist,nodelink;
+    //var ws,url_list=[{'prot':'http','url':'www.baidu.com'}],url_results=Array(),element,layer,ips,adlist,nodelink;
 
-    layui.use(['element', 'layer'], function(){
+    layui.use(['element', 'layer', 'form'], function(){
          element = layui.element;
          layer = layui.layer;
+         form = layui.form;
 
+        //监听提交
+        form.on('submit(demo1)', function(data){
+            $.ajax({
+                url:"api.php?act=addSite",
+                type:"post",
+                data:data.field,
+                dataType:"json",
+                success:function(data){
+                    layer.msg(data.message);
+                },
+                error:function(xmlHttpRequest,textStatus,errorThrown){
+                    console.log(textStatus+"出错！"+errorThrown);
+                }
+            });
+
+            return false;
+        });
 
         init();
     });
 
     function init() {
-//        $.ajax({
-//            url:"api.php?act=checkUser",
-//            type:"post",
-//            data:{
-//                'url' : 'www.baidu.com',
-//                'type' : 'http',
-//                'isp' : 0,
-//            },
-//            async: false,
-//            dataType:"json",
-//            success:function(data){
-//                if(data.code == 1){
-//                    var result = data.data,url;
-//                    if(result.rt){
-//                        adlist = result['data']['adlist'];
-//                        nodelink = result['data']['nodelink'];
-//                        ips = result['data']['fullips'];
-//                        res = {'rt':result['rt'], 'data':{'user':result['data']['user'], 'code':result['data']['code'], 'ut':result['data']['ut']}};
-//                        url='wss://wsapi.17ce.com:8001/socket/?' + setUrlK(res.data);
-//                        wsq(url);
-//                    }
-//                }
-//            },
-//            error:function(xmlHttpRequest,textStatus,errorThrown){
-//                console.log(textStatus+"出错！"+errorThrown);
-//            }
-//        });
+        //获取域名列表
+        $.ajax({
+            url:"api.php?act=getSite",
+            type:"get",
+            data:{
+            },
+            async: false,
+            dataType:"json",
+            success:function(data){
+                if(data.code == 1){
+                    url_list = data.data;
+                    console.log(url_list);
+                }
+            },
+            error:function(xmlHttpRequest,textStatus,errorThrown){
+                console.log(textStatus+"出错！"+errorThrown);
+            }
+        });
+
+        //获取17ce认证信息
+       $.ajax({
+           url:"api.php?act=checkUser",
+           type:"post",
+           data:{
+               'url' : 'www.baidu.com',
+               'type' : 'http',
+               'isp' : 0,
+           },
+           async: false,
+           dataType:"json",
+           success:function(data){
+               if(data.code == 1){
+                   var result = data.data,url;
+                   if(result.rt){
+                       adlist = result['data']['adlist'];
+                       nodelink = result['data']['nodelink'];
+                       ips = result['data']['fullips'];
+                       res = {'rt':result['rt'], 'data':{'user':result['data']['user'], 'code':result['data']['code'], 'ut':result['data']['ut']}};
+                       url='wss://wsapi.17ce.com:8001/socket/?' + setUrlK(res.data);
+                       wsq(url);
+                   }
+               }
+           },
+           error:function(xmlHttpRequest,textStatus,errorThrown){
+               console.log(textStatus+"出错！"+errorThrown);
+           }
+       });
 
         $.each(url_list,function (k,i) {
             $('.layui-collapse').append($('.mobal').html());
             $('.layui-collapse .layui-colla-item:last').addClass('mobal'+(k+1));
             $('.layui-collapse .mobal'+(k+1)).removeClass('mobal');
             $('.layui-collapse .mobal'+(k+1)+' li')[0].innerText = k+1;
-            $('.layui-collapse .mobal'+(k+1)+' li')[1].innerText = i.url;
+            $('.layui-collapse .mobal'+(k+1)+' li')[1].innerText = i.name;
+            $('.layui-collapse .mobal'+(k+1)+' li')[2].innerText = i.url;
+            $('.layui-collapse .mobal'+(k+1)+' li button').attr('onClick','delUrl('+i.id+')');
 
-            //加载地图
-            // 基于准备好的dom，初始化echarts实例
-            var myChart = echarts.init($('.layui-collapse .mobal'+(k+1)+' .map')[0]);
-
-            // 指定图表的配置项和数据
-
-            var tmap = {
-                backgroundColor: '#F3FBFF',
-                title: {
-                    text: '',
-                    x: 'center'
-                },
-                tooltip: {
-                    trigger: 'item',
-                    formatter: '{b}<br/>测试时间 ：{c} ms'
-                },
-                legend: {
-                    show: false,
-                    orient: 'vertical',
-                    x: 'left',
-                    data: ['测试时间']
-                },
-                dataRange: {
-                    x: '1080px',
-                    y: '300px',
-                    splitList: [
-                        {start: 100, label: '差'},
-                        {start: 50, end: 100, label: '较差'},
-                        {start: 30, end: 50, label: '警告'},
-                        {start: 10, end: 30, label: '较好'},
-                        {end: 10, label: '好'}
-                    ],
-                    color: ['#D50000', '#FF6600', '#ECEC00','#00FF40','#008000']
-                },
-                series: [{
-                    name: '测试时间',
-                    type: 'map',
-                    mapType: 'china',
-                    roam: false,
-                    itemStyle: {
-                        normal: {
-                            label: {
-                                show: true,
-                                textStyle: {
-                                    color: "#000"
-                                }
-                            }
-                        },
-                        emphasis: {
-                            label: {
-                                show: true
-                            }
-                        }
-                    },
-                    data: []
-                }]
-            };
-
-
-
-                var myChart1 = ec.init(document.getElementById('chinamap_time'));
-                myChart1.setOption(tmap);
             }
         );
-
-            var option = {
-                title: {
-                    text: '网站测速',
-                    left: 'center'
-                },
-                tooltip: {
-                    trigger: 'item',
-                    formatter: '{b}<br/>测试时间 ：{c} ms',
-                },
-                series: [
-                    {
-                    name: '测试时间',
-                    type: 'map',
-                    mapType: 'china',
-                    roam: false,
-                    itemStyle: {
-                        normal: {
-                            label: {
-                                show: true,
-                                textStyle: {
-                                    color: "#000"
-                                }
-                            }
-                        },
-                        emphasis: {
-                            label: {
-                                show: true
-                            }
-                        }
-                    },
-                    data: [
-                        {
-                            'name': '河南',// .replace('省','').replace('市',''),
-                            'value':  12312,
-                            'itemStyle': {
-                                normal: {
-                                    color: '#00FF40',
-                                    label: {
-                                        show: true,
-                                        textStyle: {
-                                            color: '#000'
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    ]
-                }
-                ]
-            };
-
-            // 使用刚指定的配置项和数据显示图表。
-            myChart.setOption(option);
-        })
         element.init();
     }
 
+    function delUrl(d) {
+        $.ajax({
+            url:"api.php?act=delUrl",
+            type:"post",
+            data:{
+                id : d,
+            },
+            dataType:"json",
+            success:function(data){
+                layer.msg(data.message);
+            },
+            error:function(xmlHttpRequest,textStatus,errorThrown){
+                console.log(textStatus+"出错！"+errorThrown);
+            }
+        });
+    }
 
     function ws_send() {
         $.each(url_list, function (k,i) {
             var url=i['url'],prot=i['prot'];
-            console.log(ws)
+            //console.log(ws)
             ws.send('{"txnid":'+(k+1)+',"nodetype":1,"num":1,"Url":"'+prot+'://'+url+'","TestType":"'+prot.toUpperCase()+'","Host":"","TimeOut":10,"Request":"GET","NoCache":false,"Speed":0,"Cookie":"","Trace":false,"Referer":"","UserAgent":"","FollowLocation":2,"GetMD5":true,"GetResponseHeader":true,"MaxDown":1048576,"AutoDecompress":true,"type":1,"isps":[0,1,2,6,7,8,17,18,19,3,4],"pro_ids":[12,49,79,80,180,183,184,188,189,190,192,193,194,195,196,221,227,235,236,238,241,243,250,346,349,350,351,353,354,355,356,357,239,352],"areas":[0,1,2,3],"SnapShot":true,"postfield":"","PingCount":10,"PingSize":32,"SrcIP":""}')
         })
     }
 
-    function format_msg(data) {
-        if(data.type == 'NewData'){
-            if(typeof url_results[data.txnid] == 'undefined'){
-                url_results[data.txnid] = Array()
-                url_results[data.txnid].push(data.data);
-            }else{
-                url_results[data.txnid].push(data.data);
-            }
-        }else if (data.type == 'TaskEnd'){
-            url_results[data.txnid]['end'] = Array();
-            url_results[data.txnid]['end'] = data.data;
+    function draw_map(id) {
+        //加载地图
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init($('.layui-collapse .mobal'+id+' .map')[0]);
 
-            // 按时间中国地图
-            var tdata = listSortBy(mdata.time_backdata, 'NodeID.pro_id', 'asc');
-            for (var i in tdata) {
-                if(i>1){
-                    if(tdata[i]['NodeID']['province'] != tdata[i-1]['NodeID']['province']){
-                        if (tdata[i]['Avg']/1000 <10) {
-                            tmap.series[0].data.push({
-                                'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
-                                'value':  (tdata[i]['Avg']/1000).toFixed(3),
-                                'itemStyle': {
-                                    normal: {
-                                        color: '#008000',
-                                        label: {
-                                            show: true,
-                                            textStyle: {
-                                                color: '#000',
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        } else if (tdata[i]['Avg']/1000 >= 10 && tdata[i]['Avg']/1000 < 30) {
-                            tmap.series[0].data.push({
-                                'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
-                                'value':  (tdata[i]['Avg']/1000).toFixed(3),
-                                'itemStyle': {
-                                    normal: {
-                                        color: '#00FF40',
-                                        label: {
-                                            show: true,
-                                            textStyle: {
-                                                color: '#000'
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        } else if (tdata[i]['Avg']/1000 >= 30 && tdata[i]['Avg']/1000 < 50) {
-                            tmap.series[0].data.push({
-                                'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
-                                'value':  (tdata[i]['Avg']/1000).toFixed(3),
-                                'itemStyle': {
-                                    normal: {
-                                        color: '#ECEC00',
-                                        label: {
-                                            show: true,
-                                            textStyle: {
-                                                color: '#000'
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        } else if (tdata[i]['Avg']/1000 >= 50 && tdata[i]['Avg']/1000 < 100) {
-                            tmap.series[0].data.push({
-                                'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
-                                'value':  (tdata[i]['Avg']/1000).toFixed(3),
-                                'itemStyle': {
-                                    normal: {
-                                        color: '#FF6600',
-                                        label: {
-                                            show: true,
-                                            textStyle: {
-                                                color: '#000'
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        } else {
-                            tmap.series[0].data.push({
-                                'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
-                                'value':  (tdata[i]['Avg']/1000).toFixed(3),
-                                'itemStyle': {
-                                    normal: {
-                                        color: '#D50000',
-                                        label: {
-                                            show: true,
-                                            textStyle: {
-                                                color: '#000',
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        };
+        // 指定图表的配置项
+        var tmap = {
+            backgroundColor: '#F3FBFF',
+            title: {
+                text: '',
+                x: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}<br/>测试时间 ：{c} ms'
+            },
+            legend: {
+                show: false,
+                orient: 'vertical',
+                x: 'left',
+                data: ['测试时间']
+            },
+            dataRange: {
+                x: '100px',
+                y: '300px',
+                splitList: [
+                    {start: 100, label: '差'},
+                    {start: 50, end: 100, label: '较差'},
+                    {start: 30, end: 50, label: '警告'},
+                    {start: 10, end: 30, label: '较好'},
+                    {end: 10, label: '好'}
+                ],
+                color: ['#D50000', '#FF6600', '#ECEC00','#00FF40','#008000']
+            },
+            series: [{
+                name: '测试时间',
+                type: 'map',
+                mapType: 'china',
+                roam: false,
+                itemStyle: {
+                    normal: {
+                        label: {
+                            show: true,
+                            textStyle: {
+                                color: "#000"
+                            }
+                        }
+                    },
+                    emphasis: {
+                        label: {
+                            show: true
+                        }
                     }
-                }else{
-                    if (tdata[i]['Avg']/1000 <10) {
+                },
+                data: []
+            }]
+        };
+
+
+        //加载数据
+        var tdata = listSortBy(url_results[id], 'NodeID.pro_id', 'asc');
+        console.log(tdata);
+        for (var i in tdata) {
+            if(i == 'srcip' || i == 'end'){
+                continue;
+            }else if(i>1){
+                var otime = parseFloat(tdata[i]['TotalTime'].toString().replace('s',''));
+                if(tdata[i]['NodeID']['pro_id'] != tdata[i-1]['NodeID']['pro_id']){
+                    if (otime <1) {
                         tmap.series[0].data.push({
-                            'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
-                            'value':  (tdata[i]['Avg']/1000).toFixed(3),
+                            'name': (tdata[i]['NodeID']['province']),//.replace('省','').replace('市',''),
+                            'value':  otime.toFixed(3),
                             'itemStyle': {
                                 normal: {
                                     color: '#008000',
                                     label: {
                                         show: true,
                                         textStyle: {
-                                            color: '#000'
+                                            color: '#000',
                                         }
                                     }
                                 }
                             }
                         });
-                    } else if (tdata[i]['Avg']/1000 >= 10 && tdata[i]['Avg']/1000 < 30) {
+                    } else if (otime >= 1 && otime < 2) {
                         tmap.series[0].data.push({
-                            'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
-                            'value':  (tdata[i]['Avg']/1000).toFixed(3),
+                            'name': (tdata[i]['NodeID']['province']),//.replace('省','').replace('市',''),
+                            'value':  otime.toFixed(3),
                             'itemStyle': {
                                 normal: {
                                     color: '#00FF40',
@@ -360,10 +304,10 @@
                                 }
                             }
                         });
-                    } else if (tdata[i]['Avg']/1000 >= 30 && tdata[i]['Avg']/1000 < 50) {
+                    } else if (otime >= 2 && otime < 3) {
                         tmap.series[0].data.push({
-                            'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
-                            'value':  (tdata[i]['Avg']/1000).toFixed(3),
+                            'name': (tdata[i]['NodeID']['province']),//.replace('省','').replace('市',''),
+                            'value':  otime.toFixed(3),
                             'itemStyle': {
                                 normal: {
                                     color: '#ECEC00',
@@ -376,10 +320,10 @@
                                 }
                             }
                         });
-                    } else if (tdata[i]['Avg']/1000 >= 50 && tdata[i]['Avg']/1000 < 100) {
+                    } else if (otime >= 3 && otime < 5) {
                         tmap.series[0].data.push({
-                            'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
-                            'value':  (tdata[i]['Avg']/1000).toFixed(3),
+                            'name': (tdata[i]['NodeID']['province']),//.replace('省','').replace('市',''),
+                            'value':  otime.toFixed(3),
                             'itemStyle': {
                                 normal: {
                                     color: '#FF6600',
@@ -394,15 +338,15 @@
                         });
                     } else {
                         tmap.series[0].data.push({
-                            'name': (tdata[i]['NodeID']['province']),// .replace('省','').replace('市',''),
-                            'value':  (tdata[i]['Avg']/1000).toFixed(3),
+                            'name': (tdata[i]['NodeID']['province']),//.replace('省','').replace('市',''),
+                            'value':  otime.toFixed(3),
                             'itemStyle': {
                                 normal: {
                                     color: '#D50000',
                                     label: {
                                         show: true,
                                         textStyle: {
-                                            color: '#000'
+                                            color: '#000',
                                         }
                                     }
                                 }
@@ -410,16 +354,130 @@
                         });
                     };
                 }
+            }else{
+                var otime = parseFloat(tdata[i]['TotalTime'].toString().replace('s',''));
+                if (otime > 0 && otime <1) {
+                    tmap.series[0].data.push({
+                        'name': (tdata[i]['NodeID']['province']),//.replace('省','').replace('市',''),
+                        'value':  otime.toFixed(3),
+                        'itemStyle': {
+                            normal: {
+                                color: '#008000',
+                                label: {
+                                    show: true,
+                                    textStyle: {
+                                        color: '#000'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else if (otime >= 1 && otime < 2) {
+                    tmap.series[0].data.push({
+                        'name': (tdata[i]['NodeID']['province']),//.replace('省','').replace('市',''),
+                        'value':  otime.toFixed(3),
+                        'itemStyle': {
+                            normal: {
+                                color: '#00FF40',
+                                label: {
+                                    show: true,
+                                    textStyle: {
+                                        color: '#000'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else if (otime >= 2 && otime < 3) {
+                    tmap.series[0].data.push({
+                        'name': (tdata[i]['NodeID']['province']),//.replace('省','').replace('市',''),
+                        'value':  otime.toFixed(3),
+                        'itemStyle': {
+                            normal: {
+                                color: '#ECEC00',
+                                label: {
+                                    show: true,
+                                    textStyle: {
+                                        color: '#000'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else if (otime >= 3 && otime < 5) {
+                    tmap.series[0].data.push({
+                        'name': (tdata[i]['NodeID']['province']),//.replace('省','').replace('市',''),
+                        'value':  otime.toFixed(3),
+                        'itemStyle': {
+                            normal: {
+                                color: '#FF6600',
+                                label: {
+                                    show: true,
+                                    textStyle: {
+                                        color: '#000'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    tmap.series[0].data.push({
+                        'name': (tdata[i]['NodeID']['province']),//.replace('省','').replace('市',''),
+                        'value':  otime.toFixed(3),
+                        'itemStyle': {
+                            normal: {
+                                color: '#D50000',
+                                label: {
+                                    show: true,
+                                    textStyle: {
+                                        color: '#000'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                };
             }
         }
-        console.log(url_results);
+        console.log(tmap);
+        myChart.setOption(tmap);
+    }
+    function format_msg(data) {
+        if(data.rt == 1 && data.msg == 'login ok'){
+            ws_send();
+        }else if(data.rt == 1){
+            if(data.type == 'NewData'){
+                if(ips.length <= 0){ return;}
+                if(typeof url_results[data.txnid] == 'undefined'){
+                    url_results[data.txnid] = Array()
+                }
+                for (var i = 0; i < ips.length; i++) {
+                    if(ips[i]['sid'] == data.data['NodeID']){
+                        data.data['NodeID'] = ips[i];
+                    }
+                }
+                url_results[data.txnid].push(data.data);
+                url_results[data.txnid]['srcip']=data.data['SrcIP'];
+            }else if (data.type == 'TaskEnd'){
+                url_results[data.txnid]['end'] = Array();
+                url_results[data.txnid]['end'] = data.data;
+                draw_map(data.txnid);
+                $('.mobal'+(data.txnid)+' li')[2].innerText='监测点总数:'+data.data.TotalCount;
+                $('.mobal'+(data.txnid)+' li')[3].innerHTML='成功总数:<span style="color:green">'+data.data.TotalCountOK+'</span>';
+                $('.mobal'+(data.txnid)+' li')[4].innerText='检测完成';
+                $('.mobal'+(data.txnid)+' li.loading').css('color','green');
+            }
+        }
+        //console.log(url_results);
     }
     function wsq(url) {
         // 创建一个Socket实例
         ws = new WebSocket(url);
 
         // 打开Socket
-        ws.onopen = ws_send;
+        ws.onopen = function (ev) {
+
+        };
         ws.onmessage = function(event) {
             format_msg(JSON.parse(event.data));
             //console.log('Client received a message',event);
@@ -454,6 +512,19 @@
             result[j] = arr[index];
         }
         return result;
+    }
+
+    /**
+     * 比较 排序
+     * @param  {[type]} property [description]
+     * @return {[type]}          [description]
+     */
+    function compare(property){
+        return function(a,b){
+            var value1 = a[property];
+            var value2 = b[property];
+            return value1 - value2;
+        }
     }
 </script>
 </html>

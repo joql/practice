@@ -19,9 +19,17 @@ if(!empty($_GET['act'])){
 }
 
 switch ($act){
-
     case 'checkUser':
         checkUser();
+        break;
+    case 'addSite':
+        addSite();
+        break;
+    case 'getSite':
+        getSite();
+        break;
+    case 'delUrl':
+        delUrl();
         break;
     default:
         returnAjax(0,'denined');
@@ -48,4 +56,45 @@ function checkUser(){
     if($response->getStatusCode() != 200) returnAjax(0,'err');
     $result = $response->getBody();
     returnAjax(1,'success',json_decode($result,true));
+}
+
+function addSite(){
+    global $db;
+    (empty($_POST['type']) || empty($_POST['url']) || empty($_POST['name'])) && returnAjax(0,'err');
+    $data = [
+        'type' => $_POST['type'],
+        'url' => $_POST['url'],
+        'name' => $_POST['name'],
+    ];
+
+    $db->insert('17ce_url_list',$data);
+    returnAjax(1,'success');
+}
+function getSite(){
+    global $db;
+
+    $data = $db->get('17ce_url_list');
+    foreach ($data as $k=>$v){
+        switch ($v['type']){
+            case '1':
+                $data[$k]['prot'] = 'http';
+                break;
+            case '2':
+                $data[$k]['prot'] = 'https';
+                break;
+        }
+    }
+    returnAjax(1,'success',$data);
+}
+
+
+function delUrl(){
+    global $db;
+    (empty($_POST['id'])) && returnAjax(0,'err');
+    $filter = [
+        'id' => $_POST['id']
+    ];
+
+    $db->where('id='.$_POST['id'])->delete('17ce_url_list',1);
+    returnAjax(1,'success');
 }
