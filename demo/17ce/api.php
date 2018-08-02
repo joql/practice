@@ -35,8 +35,13 @@ switch ($act){
         returnAjax(0,'denined');
 }
 
+
+
+
+
+
 function checkUser(){
-    $url='https://www.17ce.com/sitex/checkuser';
+    $url='https://www.17ce.com/site/checkuser';
 
     $p_url = $_POST['url'];
     $p_type = $_POST['type'];
