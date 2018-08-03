@@ -41,23 +41,43 @@ switch ($act){
 
 
 function checkUser(){
-    $url='https://www.17ce.com/site/checkuser';
+    $url='https://www.17ce.com/sitex/checkuser';
 
     $p_url = $_POST['url'];
     $p_type = $_POST['type'];
     $p_isp = $_POST['isp'];
     $client = new Client();
-    $response = $client->post($url,[
-        'verify' => false,
-        'headers' => [
-            'Referer' => 'https://www.17ce.com/'
-        ],
-        'form_params' => [
-            'isp' => $p_isp,
-            'type' => $p_type,
-            'url' => $p_url
-        ]
-    ]);
+    try{
+        $response = $client->post($url,[
+            'verify' => false,
+            'headers' => [
+                'Referer' => 'https://www.17ce.com/'
+            ],
+            'form_params' => [
+                'isp' => $p_isp,
+                'type' => $p_type,
+                'url' => $p_url
+            ]
+        ]);
+    }catch (Exception $e){
+        try{
+            $url='https://www.17ce.com/site/checkuser';
+            $response = $client->post($url,[
+                'verify' => false,
+                'headers' => [
+                    'Referer' => 'https://www.17ce.com/'
+                ],
+                'form_params' => [
+                    'isp' => $p_isp,
+                    'type' => $p_type,
+                    'url' => $p_url
+                ]
+            ]);
+        }catch (Exception $e1){
+            returnAjax(0,'网络异常');
+        }
+    }
+
     if($response->getStatusCode() != 200) returnAjax(0,'err');
     $result = $response->getBody();
     returnAjax(1,'success',json_decode($result,true));

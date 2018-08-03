@@ -20,6 +20,19 @@
         .loading{
             color: red;
         }
+        .layui-colla-content{
+            height: 400px;
+        }
+        .map{
+            float: left;
+            width: 50%;
+            height:400px;
+        }
+        .map-speed{
+            float: right;
+            width: 50%;
+            height:400px;
+        }
     </style>
 </head>
 <body>
@@ -75,7 +88,10 @@
             </ul>
         </h2>
         <div class="layui-colla-content layui-show">
-            <div class="map" style="width: 100%;height:400px;">
+            <div class="map">
+
+            </div>
+            <div class="map-speed">
 
             </div>
         </div>
@@ -158,6 +174,8 @@
                        url='wss://wsapi.17ce.com:8001/socket/?' + setUrlK(res.data);
                        wsq(url);
                    }
+               }else{
+                   layer.msg(data.message);
                }
            },
            error:function(xmlHttpRequest,textStatus,errorThrown){
@@ -173,12 +191,14 @@
             $('.layui-collapse .mobal'+(k+1)+' li')[1].innerText = i.name;
             $('.layui-collapse .mobal'+(k+1)+' li')[2].innerText = i.url;
             $('.layui-collapse .mobal'+(k+1)+' li button').attr('onClick','delUrl('+i.id+')');
-            $('.mobal'+(k+1)+' .map').css('width',$('.mobal'+(k+1)+' .layui-colla-content').width())
+            $('.mobal'+(k+1)+' .map').css('width',$('.mobal'+(k+1)+' .layui-colla-content').width()/2)
+            $('.mobal'+(k+1)+' .map-speed').css('width',$('.mobal'+(k+1)+' .layui-colla-content').width()/2)
             }
         );
         element.init();
     }
 
+    //删除网址
     function delUrl(d) {
         layer.msg(
             '真的要删除么!',
@@ -218,15 +238,15 @@
     }
 
     function draw_map(id) {
-        //加载地图
-        // 基于准备好的dom，初始化echarts实例
+
+        //按时间
         var myChart = echarts.init($('.layui-collapse .mobal'+id+' .map')[0]);
 
         // 指定图表的配置项
         var tmap = {
             backgroundColor: '#F3FBFF',
             title: {
-                text: '',
+                text: url_list[id-1].url+'['+url_list[id-1].name+'] 延时图',
                 x: 'center'
             },
             tooltip: {
@@ -278,7 +298,6 @@
 
         //加载数据
         var tdata = listSortBy(url_results[id], 'NodeID.pro_id', 'asc');
-        console.log(tdata);
         for (var i in tdata) {
             if(i == 'srcip' || i == 'end'){
                 continue;
@@ -452,8 +471,240 @@
                 };
             }
         }
-        console.log(tmap);
         myChart.setOption(tmap);
+
+
+        //按速度
+        var myChart_speed = echarts.init($('.layui-collapse .mobal'+id+' .map-speed')[0]);
+        var smap = {
+            backgroundColor: '#F3FBFF',
+            title: {
+                text: url_list[id-1].url+'['+url_list[id-1].name+'] 速度图',
+                x: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{b}<br/>测试速度 ：{c} KB/s'
+            },
+            legend: {
+                show: false,
+                orient: 'vertical',
+                x: 'left',
+                data: ['测试速度']
+            },
+            dataRange: {
+                x: 'left',
+                y: 'bottom',
+                splitList: [
+                    {start: 500, label: '好'},
+                    {start: 100, end: 500, label: '较好'},
+                    {start: 50, end: 100, label: '警告'},
+                    {start: 20, end: 50, label: '较差'},
+                    {end: 20, label: '差'}
+                ],
+                color: ['#008000', '#00FF40', '#ECEC00','#FF6600','#D50000']
+            },
+            series: [{
+                name: '测试速度',
+                type: 'map',
+                mapType: 'china',
+                mapValueCalculation: 'average',
+                roam: false,
+                itemStyle: {
+                    normal: {
+                        label: {
+                            show: true,
+                            textStyle: {
+                                color: "#000"
+                            }
+                        }
+                    },
+                    emphasis: {
+                        label: {
+                            show: true
+                        }
+                    }
+                },
+                data: []
+            }]
+        };
+
+        var sdata = listSortBy(url_results[id], 'view', 'asc');
+        console.log(sdata);
+        for (var j in sdata) {
+            if(j == 'srcip' || j == 'end') {
+                continue;
+            }else if(j>1){
+                if(sdata[j]['NodeID']['province'] != sdata[j-1]['NodeID']['province']){
+                    if (sdata[j]['speed'] <20) {
+                        smap.series[0].data.push({
+                            'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
+                            'value':  sdata[j]['speed'],
+                            'itemStyle': {
+                                normal: {
+                                    color: '#D50000',
+                                    label: {
+                                        show: true,
+                                        textStyle: {
+                                            color: '#000',
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else if (sdata[j]['speed'] >= 20 && sdata[j]['speed'] < 50) {
+                        smap.series[0].data.push({
+                            'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
+                            'value':  sdata[j]['speed'],
+                            'itemStyle': {
+                                normal: {
+                                    color: '#FF6600',
+                                    label: {
+                                        show: true,
+                                        textStyle: {
+                                            color: '#000'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else if (sdata[j]['speed'] >= 50 && sdata[j]['speed'] < 100) {
+                        smap.series[0].data.push({
+                            'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
+                            'value':  sdata[j]['speed'],
+                            'itemStyle': {
+                                normal: {
+                                    color: '#ECEC00',
+                                    label: {
+                                        show: true,
+                                        textStyle: {
+                                            color: '#000'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else if (sdata[j]['speed'] >= 100 && sdata[j]['speed'] < 500) {
+                        smap.series[0].data.push({
+                            'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
+                            'value':  sdata[j]['speed'],
+                            'itemStyle': {
+                                normal: {
+                                    color: '#00FF40',
+                                    label: {
+                                        show: true,
+                                        textStyle: {
+                                            color: '#000'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } else {
+                        smap.series[0].data.push({
+                            'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
+                            'value':  sdata[j]['speed'],
+                            'itemStyle': {
+                                normal: {
+                                    color: '#008000',
+                                    label: {
+                                        show: true,
+                                        textStyle: {
+                                            color: '#000',
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    };
+                }
+            }else{
+                if (sdata[j]['speed'] <20) {
+                    smap.series[0].data.push({
+                        'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
+                        'value':  sdata[j]['speed'],
+                        'itemStyle': {
+                            normal: {
+                                color: '#D50000',
+                                label: {
+                                    show: true,
+                                    textStyle: {
+                                        color: '#000'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else if (sdata[j]['speed'] >= 20 && sdata[j]['speed'] < 50) {
+                    smap.series[0].data.push({
+                        'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
+                        'value':  sdata[j]['speed'],
+                        'itemStyle': {
+                            normal: {
+                                color: '#FF6600',
+                                label: {
+                                    show: true,
+                                    textStyle: {
+                                        color: '#000'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else if (sdata[j]['speed'] >= 50 && sdata[j]['speed'] < 100) {
+                    smap.series[0].data.push({
+                        'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
+                        'value':  sdata[j]['speed'],
+                        'itemStyle': {
+                            normal: {
+                                color: '#ECEC00',
+                                label: {
+                                    show: true,
+                                    textStyle: {
+                                        color: '#000'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else if (sdata[j]['speed'] >= 100 && sdata[j]['speed'] < 500) {
+                    smap.series[0].data.push({
+                        'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
+                        'value':  sdata[j]['speed'],
+                        'itemStyle': {
+                            normal: {
+                                color: '#00FF40',
+                                label: {
+                                    show: true,
+                                    textStyle: {
+                                        color: '#000'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    smap.series[0].data.push({
+                        'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
+                        'value':  sdata[j]['speed'],
+                        'itemStyle': {
+                            normal: {
+                                color: '#008000',
+                                label: {
+                                    show: true,
+                                    textStyle: {
+                                        color: '#000'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                };
+            }
+        }
+        console.log(smap);
+        myChart_speed.setOption(smap);
+
     }
     function format_msg(data) {
         if(data.rt == 1 && data.msg == 'login ok'){
@@ -469,6 +720,7 @@
                         data.data['NodeID'] = ips[i];
                     }
                 }
+                data.data['speed'] = (data.data['RealSize']/1024/data.data['DownTime']).toFixed(3);
                 url_results[data.txnid].push(data.data);
                 url_results[data.txnid]['srcip']=data.data['SrcIP'];
             }else if (data.type == 'TaskEnd'){
