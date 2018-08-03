@@ -180,20 +180,33 @@
     }
 
     function delUrl(d) {
-        $.ajax({
-            url:"api.php?act=delUrl",
-            type:"post",
-            data:{
-                id : d,
-            },
-            dataType:"json",
-            success:function(data){
-                layer.msg(data.message);
-            },
-            error:function(xmlHttpRequest,textStatus,errorThrown){
-                console.log(textStatus+"出错！"+errorThrown);
+        layer.msg(
+            '真的要删除么!',
+            {
+                time: 20000,
+                btn: ['删除','关闭'],
+                yes: function () {
+                    $.ajax({
+                        url:"api.php?act=delUrl",
+                        type:"post",
+                        data:{
+                            id : d,
+                        },
+                        dataType:"json",
+                        success:function(data){
+                            layer.msg(data.message);
+                        },
+                        error:function(xmlHttpRequest,textStatus,errorThrown){
+                            console.log(textStatus+"出错！"+errorThrown);
+                        }
+                    });
+                },
+                btn2: function () {
+                }
+
             }
-        });
+        );
+
     }
 
     function ws_send() {
