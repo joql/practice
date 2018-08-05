@@ -275,6 +275,7 @@
                 name: '测试时间',
                 type: 'map',
                 mapType: 'china',
+                showLegendSymbol: false,
                 roam: false,
                 itemStyle: {
                     normal: {
@@ -508,6 +509,7 @@
                 name: '测试速度',
                 type: 'map',
                 mapType: 'china',
+                showLegendSymbol: false,
                 mapValueCalculation: 'average',
                 roam: false,
                 itemStyle: {
@@ -535,11 +537,12 @@
             if(j == 'srcip' || j == 'end') {
                 continue;
             }else if(j>1){
+                var speed = parseFloat(sdata[j]['speed']);
                 if(sdata[j]['NodeID']['province'] != sdata[j-1]['NodeID']['province']){
                     if (sdata[j]['speed'] <20) {
                         smap.series[0].data.push({
                             'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
-                            'value':  sdata[j]['speed'],
+                            'value':  speed.toFixed(1),
                             'itemStyle': {
                                 normal: {
                                     color: '#D50000',
@@ -555,7 +558,7 @@
                     } else if (sdata[j]['speed'] >= 20 && sdata[j]['speed'] < 50) {
                         smap.series[0].data.push({
                             'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
-                            'value':  sdata[j]['speed'],
+                            'value':  speed.toFixed(1),
                             'itemStyle': {
                                 normal: {
                                     color: '#FF6600',
@@ -571,7 +574,7 @@
                     } else if (sdata[j]['speed'] >= 50 && sdata[j]['speed'] < 100) {
                         smap.series[0].data.push({
                             'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
-                            'value':  sdata[j]['speed'],
+                            'value':  speed.toFixed(1),
                             'itemStyle': {
                                 normal: {
                                     color: '#ECEC00',
@@ -587,7 +590,7 @@
                     } else if (sdata[j]['speed'] >= 100 && sdata[j]['speed'] < 500) {
                         smap.series[0].data.push({
                             'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
-                            'value':  sdata[j]['speed'],
+                            'value':  speed.toFixed(1),
                             'itemStyle': {
                                 normal: {
                                     color: '#00FF40',
@@ -603,7 +606,7 @@
                     } else {
                         smap.series[0].data.push({
                             'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
-                            'value':  sdata[j]['speed'],
+                            'value':  speed.toFixed(1),
                             'itemStyle': {
                                 normal: {
                                     color: '#008000',
@@ -619,10 +622,11 @@
                     };
                 }
             }else{
+                var speed = parseFloat(sdata[j]['speed']);
                 if (sdata[j]['speed'] <20) {
                     smap.series[0].data.push({
                         'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
-                        'value':  sdata[j]['speed'],
+                        'value':  speed.toFixed(1),
                         'itemStyle': {
                             normal: {
                                 color: '#D50000',
@@ -638,7 +642,7 @@
                 } else if (sdata[j]['speed'] >= 20 && sdata[j]['speed'] < 50) {
                     smap.series[0].data.push({
                         'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
-                        'value':  sdata[j]['speed'],
+                        'value':  speed.toFixed(1),
                         'itemStyle': {
                             normal: {
                                 color: '#FF6600',
@@ -654,7 +658,7 @@
                 } else if (sdata[j]['speed'] >= 50 && sdata[j]['speed'] < 100) {
                     smap.series[0].data.push({
                         'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
-                        'value':  sdata[j]['speed'],
+                        'value':  speed.toFixed(1),
                         'itemStyle': {
                             normal: {
                                 color: '#ECEC00',
@@ -670,7 +674,7 @@
                 } else if (sdata[j]['speed'] >= 100 && sdata[j]['speed'] < 500) {
                     smap.series[0].data.push({
                         'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
-                        'value':  sdata[j]['speed'],
+                        'value':  speed.toFixed(1),
                         'itemStyle': {
                             normal: {
                                 color: '#00FF40',
@@ -686,7 +690,7 @@
                 } else {
                     smap.series[0].data.push({
                         'name': (sdata[j]['NodeID']['province']),//.replace('省','').replace('市',''),
-                        'value':  sdata[j]['speed'],
+                        'value':  speed.toFixed(1),
                         'itemStyle': {
                             normal: {
                                 color: '#008000',
