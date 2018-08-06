@@ -32,7 +32,7 @@ switch ($act){
     case 'getTestPointResult':
         $chinaz->getTestPoint();
         $data = $chinaz->getTestPointResult();
-        var_dump($data);
+        returnAjax(1,'success',$data);
         break;
     case 'addSite':
         if($chinaz->addSite($_POST['type'], $_POST['url'], $_POST['name'])){

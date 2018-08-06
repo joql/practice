@@ -154,26 +154,28 @@
         });
 
         //获取站长之家 服务器列表和enkey
-       $.ajax({
-           url:"api.php?act=getTestPoint",
-           type:"get",
-           data:{
-           },
-           async: false,
-           dataType:"json",
-           success:function(data){
-               if(data.code == 1){
-                   ips = data.data.list;
-                   enkey = data.data.enkey;
-                   getPingResult();
-               }else{
-                   layer.msg(data.message);
-               }
-           },
-           error:function(xmlHttpRequest,textStatus,errorThrown){
-               console.log(textStatus+"出错！"+errorThrown);
-           }
-       });
+//       $.ajax({
+//           url:"api.php?act=getTestPoint",
+//           type:"get",
+//           data:{
+//           },
+//           async: false,
+//           dataType:"json",
+//           success:function(data){
+//               if(data.code == 1){
+//                   ips = data.data.list;
+//                   enkey = data.data.enkey;
+//                   getPingResult();
+//               }else{
+//                   layer.msg(data.message);
+//               }
+//           },
+//           error:function(xmlHttpRequest,textStatus,errorThrown){
+//               console.log(textStatus+"出错！"+errorThrown);
+//           }
+//       });
+
+
 
         $.each(url_list,function (k,i) {
             $('.layui-collapse').append($('.mobal').html());
@@ -188,83 +190,45 @@
             }
         );
         element.init();
+
+        getPingResult();
     }
 
     function getPingResult() {
-        $.ajax({
-            url:"api.php?act=getTestPointResult",
-            type:"post",
-            data:{
-                'host' : '',
-                'ishost' : 1,
-                'checktype' : 1,
-                'guids' : ips,
-                'encode' : enkey
-            },
-            dataType:"json",
-            success:function(data){
-                if(data.code == 1 && data.data.state == 1){
-                    data.data.result['province'] = i.province;
-                    url_results[k].push(data.data.result);
-                    url_list[k]['success_count']++;
-                }
-            },
-            error:function(xmlHttpRequest,textStatus,errorThrown){
-                console.log(textStatus+"出错！"+errorThrown);
-            }
-        });
-        return;
         $.each(url_list,function (k, u) {
             if (typeof url_results[k] == 'undefined'){
                 url_results[k] = Array();
             }
-            $.each(ips,function (d, i) {
-                if( typeof url_list[k]['try_count'] == 'undefined'){
-                    url_list[k]['try_count'] = 0;
-                    url_list[k]['success_count'] = 0;
-                }
-                $.ajax({
-                    url:"api.php?act=getTestPointResult",
-                    type:"post",
-                    data:{
-                        'host' : u.url,
-                        'ishost' : 1,
-                        'checktype' : 1,
-                        'guid' : i.gid,
-                        'encode' : enkey
-                    },
-                    dataType:"json",
-                    success:function(data){
-                        if(data.code == 1 && data.data.state == 1){
-                            data.data.result['province'] = i.province;
-                            url_results[k].push(data.data.result);
-                            url_list[k]['success_count']++;
-                        }
-                    },
-                    error:function(xmlHttpRequest,textStatus,errorThrown){
-                        console.log(textStatus+"出错！"+errorThrown);
-                    },
-                    complete:function (xhr, ts) {
-
-                        url_list[k]['try_count'] = url_list[k]['try_count'] +1;
+            $.ajax({
+                url:"api.php?act=getTestPointResult",
+                type:"post",
+                data:{
+                    'host' : u.url,
+                    'ishost' : 1,
+                    'checktype' : 1,
+                },
+                dataType:"json",
+                success:function(data){
+                    if(data.code == 1){
+                        //url_results[k] = data.data.ok;
+                        //console.log(url_results);
+                        draw_map(k+1, data.data.ok);
+                        checkAction(k, (data.data.ok.length+data.data.fail.length), data.data.ok.length);
                     }
-                });
-            })
+                },
+                error:function(xmlHttpRequest,textStatus,errorThrown){
+                    console.log(textStatus+"出错！"+errorThrown);
+                }
+            });
         })
     }
 
     //检查检测状态
-    function checkAction() {
-        $.each(url_list, function (k,i) {
-            if(i.try_count >= ips.length){
-                draw_map(k+1);
-                $('.mobal'+(k+1)+' li')[3].innerText='监测点总数:'+ips.length;
-                $('.mobal'+(k+1)+' li')[4].innerHTML='成功总数:<span style="color:green">'+i.success_count+'</span>';
-                $('.mobal'+(k+1)+' li')[5].innerText='检测完成';
-                $('.mobal'+(k+1)+' li.loading').css('color','green');
-                url_list[k]['try_count'] =-1;
-            }
-        })
+    function checkAction(k,total,succes) {
+        $('.mobal'+(k+1)+' li')[3].innerText='监测点总数:'+total;
+        $('.mobal'+(k+1)+' li')[4].innerHTML='成功总数:<span style="color:green">'+succes+'</span>';
+        $('.mobal'+(k+1)+' li')[5].innerText='检测完成';
+        $('.mobal'+(k+1)+' li.loading').css('color','green');
     }
     //删除网址
     function delUrl(d) {
@@ -297,7 +261,7 @@
 
     }
 
-    function draw_map(id) {
+    function draw_map(id, data) {
 
         //按时间
         var myChart = echarts.init($('.layui-collapse .mobal'+id+' .map')[0]);
@@ -357,7 +321,7 @@
         };
 
         //加载数据
-        var tdata = compare(url_results[id-1], 'alltime');
+        var tdata = compare(data, 'alltime');
         $.each(tdata, function (k, i) {
             var otime = parseFloat(i.alltime / 1000);
             if (otime <1) {
@@ -502,7 +466,7 @@
             }]
         };
 
-        var sdata = compare(url_results[id-1], 'downspeed');
+        var sdata = compare(data, 'downspeed');
         $.each(sdata, function (d, j) {
             if (j.downspeed <20) {
                 smap.series[0].data.push({

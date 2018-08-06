@@ -10,9 +10,11 @@ class Chinaz
 {
     private $db;
     private $client;
-    public $thread = 10;
+    public $thread = 30;
     public $host;
     public $list_test_result = array();
+    public $list_test_ok = array();
+    public $list_test_fail = array();
 
     public function __construct($db, $client)
     {
@@ -35,7 +37,7 @@ class Chinaz
     }
 
     public function getSite(){
-        $data = $this->db->get('17ce_url_list',1);
+        $data = $this->db->get('17ce_url_list');
         foreach ($data as $k=>$v){
             switch ($v['type']){
                 case '1':
@@ -198,9 +200,12 @@ class Chinaz
                     $result = substr($result, 1, strlen($result)-2);
                     $result = preg_replace('/,headers.*\'/','',$result);
                     $result= $this->ext_json_decode($result, true);
-                    $result['province'] = $this->host[$index]['province'];
-                    $this->list_test_result[] = $result;
-                    //返回失败 再次请求
+                    if($result['state'] == 1){
+                        $result['result']['province'] = $this->host[$index]['province'];
+                        $this->list_test_ok[] = $result['result'];
+                    }else{
+                        $this->list_test_fail[] = $this->host[$index]['gid'];
+                    }
                 }
             },
             'rejected' => function($reason, $index){
@@ -209,7 +214,10 @@ class Chinaz
         ]);
         $promise = $pool->promise();
         $promise->wait();
-        return $this->list_test_result;
+        return [
+            'ok' => $this->list_test_ok,
+            'fail' => $this->list_test_fail,
+        ];
     }
 
     public function ext_json_decode($str, $mode=false){
