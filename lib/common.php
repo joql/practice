@@ -252,4 +252,36 @@ function excel_export_data($data, $header=null, $fileName='example.csv',$type = 
 function console($data){
     echo date('Y-m-d H:i:s').": $data\n";
 }
-//二
+
+
+/**
+ * use for:对象转数组
+ * auth: Joql
+ * @param $obj
+ * @return array|void
+ * date:2018-08-05 10:11
+ */
+function object_to_array($obj) {
+    $obj = (array)$obj;
+    foreach ($obj as $k => $v) {
+        if (gettype($v) == 'resource') {
+            return;
+        }
+        if (gettype($v) == 'object' || gettype($v) == 'array') {
+            $obj[$k] = (array)object_to_array($v);
+        }
+    }
+
+    return $obj;
+}
+
+
+function ext_json_decode($str, $mode=true)
+{
+    $str = str_replace('\'','"',$str);
+    if(preg_match('/\w:/', $str)){
+        $str = preg_replace('/(\w+):/is', '"$1":', $str);
+    }
+    return json_decode($str,true);
+}
+

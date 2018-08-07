@@ -48,6 +48,9 @@ switch ($act){
     case 'delUrl':
         $chinaz->delUrl($_POST['id']) ? returnAjax(1,'success') : returnAjax(0,'删除失败');
         break;
+    case 'test':
+        returnAjax(1,'success',$chinaz->test());
+        break;
     default:
         returnAjax(0,'denined');
 }

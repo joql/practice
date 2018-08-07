@@ -202,6 +202,7 @@ class Chinaz
                     $result= $this->ext_json_decode($result, true);
                     if($result['state'] == 1){
                         $result['result']['province'] = $this->host[$index]['province'];
+                        $result['result']['gid'] = $this->host[$index]['gid'];
                         $this->list_test_ok[] = $result['result'];
                     }else{
                         $this->list_test_fail[] = $this->host[$index]['gid'];
@@ -218,6 +219,33 @@ class Chinaz
             'ok' => $this->list_test_ok,
             'fail' => $this->list_test_fail,
         ];
+    }
+
+    public function test(){
+        $url='http://tool.chinaz.com/iframe.ashx?t=ping';
+        $host = 'www.baidu.com';
+        $response = $this->client->post($url, [
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)',
+                'Referer' => 'http://tool.chinaz.com/speedtest/'.$host
+            ],
+            'verify' => false,
+            'form_params' => [
+                'host' => $host,
+                'ishost' => 1,
+                'checktype' => 1,
+                'guid' => '84d85b74-84eb-48de-ade6-88c2983bc4dc',
+                'encode' => 'KTrY2gy7d5nWTTTqAHeiWPDFrDdr8TJF',
+            ],
+        ]);
+        if($response->getStatusCode() == '200') {
+            $result = $response->getBody();
+            $result = substr($result, 1, strlen($result) - 2);
+            $result = preg_replace('/,headers.*\'/', '', $result);
+            $result = $this->ext_json_decode($result, true);
+            return $result;
+        }
+
     }
 
     public function ext_json_decode($str, $mode=false){
