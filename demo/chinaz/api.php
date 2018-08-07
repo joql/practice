@@ -30,7 +30,7 @@ switch ($act){
         returnAjax(1,'success');
         break;
     case 'getTestPointResult':
-        $chinaz->getTestPoint();
+        $chinaz->getTestPoint($_POST['host']);
         $data = $chinaz->getTestPointResult();
         returnAjax(1,'success',$data);
         break;

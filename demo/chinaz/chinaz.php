@@ -121,7 +121,8 @@ class Chinaz
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36',
                 'Pragma' => 'no-cache',
-                'Referer' => 'http://tool.chinaz.com/'
+                'Referer' => 'http://tool.chinaz.com/',
+                'Content-Type' => 'application/x-www-form-urlencoded',
             ],
         ]);
         if($response->getStatusCode() != 200) return false;
@@ -163,7 +164,7 @@ class Chinaz
      * @return array
      * date:2018-08-06 16:58
      */
-    public function getTestPointResult($host= 'ping.pe'){
+    public function getTestPointResult($host= 'www.baidu.com'){
         $url='http://tool.chinaz.com/iframe.ashx?t=ping';
         $ishost = 1;
         $checktype = 1;
@@ -176,7 +177,8 @@ class Chinaz
                     return $this->client->postAsync($url,[
                         'headers' => [
                             'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)',
-                            'Referer' => 'http://tool.chinaz.com/speedtest/'.$host
+                            'Referer' => 'http://tool.chinaz.com/speedtest/'.$host,
+                            'Content-Type' => 'application/x-www-form-urlencoded',
                         ],
                         'verify' => false,
                         'form_params' => [
@@ -223,7 +225,7 @@ class Chinaz
 
     public function test(){
         $url='http://tool.chinaz.com/iframe.ashx?t=ping';
-        $host = 'www.baidu.com';
+        $host = 'ping.pe';
         $response = $this->client->post($url, [
             'headers' => [
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko)',
