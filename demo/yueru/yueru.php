@@ -19,7 +19,7 @@ $log->pushHandler(new \Monolog\Handler\StreamHandler('../../public/log/demo-yuer
 $yueru = new YueRu(new \GuzzleHttp\Client(), $db, $log);
 
 if($argv[1]){
-    $yueru->run($argv[1]);
+    $yueru->run1($argv[1]);
     //多线程修改任务状态
     $db->where('state=1 and task='.$argv[1])->update('task_list',['state'=>2]);
 }

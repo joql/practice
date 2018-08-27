@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>yueru</title>
+    <link rel="stylesheet" href="../../public/asset/layui/css/layui.css">
+    <style>
+        .carouse-item img{
+           width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="demoTable">
+    搜索小区：
+    <div class="layui-inline">
+        <input class="layui-input" name="id" id="demoReload" autocomplete="off">
+    </div>
+    <button class="layui-btn" data-type="reload">搜索</button>
+</div>
+<table class="layui-hide" id="test" lay-filter="demo"></table>
+</body>
+
+<div class="modal">
+    <div class="layui-carousel">
+        <div class="item" carousel-item>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+</script>
+
+<script type="application/javascript" src="../../public/js/jquery.min.js"></script>
+<script src="../../public/asset/layui/layui.js"></script>
+<script type="text/javascript">
+
+    var table,form,$,carousel;
+    layui.use(['table','carousel'], function(){
+         table = layui.table;
+         form = layui.form;
+         $ = layui.jquery;
+         carousel = layui.carousel;
+        table.render({
+            elem: '#test'
+            ,url:'api.php?act=list'
+            ,cellMinWidth: 80
+            ,cols: [[
+                {type:'numbers'}
+                ,{field:'room_no', title:'房间编号', width:80, unresize: true, sort: true}
+                ,{field:'comm_name', title:'小区名称', width:140, templet: '#usernameTpl'}
+                ,{field:'floor_num', title: '层数', width:65, sort: true}
+                ,{field:'house_no', title:'门牌号', width:65, templet: '#switchTpl', unresize: true}
+                ,{field:'unit_info', title:'房间信息', width:130, templet: '#checkboxTpl', unresize: true}
+                ,{field:'room_area', title:'房间面积', width:65}
+                ,{field:'price', title:'房间标价', width:65}
+                ,{field:'room_address', title:'房间地址'}
+                ,{field:'rental_state', title:'状态', width:80}
+                ,{field:'zone_name', title:'所属区域', width:100}
+                ,{field:'release_data', title:'收房时间',width:110}
+                ,{field:'floor_no', title:'楼层', width:65}
+                ,{field:'room_num', title:'隔间数', width:90}
+                ,{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}
+            ]]
+            ,page: true
+            ,limit: 30
+        });
+
+        //监听工具条
+        table.on('tool(demo)', function(obj){
+            var data = obj.data;
+            console.log(data);
+            if(obj.event === 'detail'){
+                var _html ='';
+                layer.open({
+                    type: 1,
+                    area: ['1400px', '900px'],
+                    content: $('.modal').html(),
+                });
+
+                $.ajax({
+                    url:"api.php",
+                    type:"get",
+                    data:{
+                        act:'get_pic_url',
+                        room_no: data.room_no,
+                    },
+                    dataType:"json",
+                    success:function(data){
+                        if(data.code == 1){
+                            $.each(data.data, function (k,v) {
+                                _html += '<div class="carouse-item"><img src="'+v.pic_url+'"></div>';
+                            })
+                            $('.layui-layer-page .item').html(_html);
+
+                            carousel.render({
+                                elem: $('.layui-layer-page .layui-carousel')[0]
+                                ,width: '100%' //设置容器宽度
+                                ,height: '70%' //设置容器宽度
+                                ,arrow: 'always' //始终显示箭头
+                                //,anim: 'updown' //切换动画方式
+                            });
+                        }
+
+                    },
+                    error:function(xmlHttpRequest,textStatus,errorThrown){
+                        console.log(textStatus+"出错！"+errorThrown);
+                    }
+                });
+            }
+        });
+    });
+    $('.demoTable .layui-btn').on('click', function(){
+        //执行重载
+        table.reload('test', {
+            page: {
+                curr: 1 //重新从第 1 页开始
+            }
+            ,where: {
+                key: {
+                    comm_name: $('#demoReload').val()
+                }
+            }
+        });
+    });
+
+</script>
+</html>

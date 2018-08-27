@@ -155,6 +155,12 @@ function returnAjax($code, $msg = '', $data = array())
     exit(json_encode(array('code' => $code, 'data' => $data, 'message' => $msg)));
 }
 
+function returnLayAjax($code, $msg = '', $data = array(), $count=0)
+{
+    header('Content-Type:application/json; charset=utf-8');
+    exit(json_encode(array('code' => $code, 'data' => $data, 'count'=>$count, 'msg' => $msg)));
+}
+
 /**
  * use for:下载文件
  * @param $filepath
