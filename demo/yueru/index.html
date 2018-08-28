@@ -5,6 +5,9 @@
     <title>yueru</title>
     <link rel="stylesheet" href="../../public/asset/layui/css/layui.css">
     <style>
+        .modal{
+            display: none;
+        }
         .carouse-item img{
            width: 100%;
             height: 100%;
@@ -12,21 +15,69 @@
     </style>
 </head>
 <body>
-<div class="demoTable">
-    搜索小区：
-    <div class="layui-inline">
-        <input class="layui-input" name="id" id="demoReload" autocomplete="off">
+<div class="layui-container">
+    <form class="layui-form" action="">
+        <div class="layui-inline">
+            <div class="layui-input-inline">
+                <select name="quiz1">
+                    <option value="">请选择省</option>
+                    <option value="浙江" selected="">浙江省</option>
+                    <option value="你的工号">江西省</option>
+                    <option value="你最喜欢的老师">福建省</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="quiz2">
+                    <option value="">请选择市</option>
+                    <option value="杭州">杭州</option>
+                    <option value="宁波" disabled="">宁波</option>
+                    <option value="温州">温州</option>
+                    <option value="温州">台州</option>
+                    <option value="温州">绍兴</option>
+                </select>
+            </div>
+            <div class="layui-input-inline">
+                <select name="quiz3">
+                    <option value="">请选择县/区</option>
+                    <option value="西湖区">西湖区</option>
+                    <option value="余杭区">余杭区</option>
+                    <option value="拱墅区">临安市</option>
+                </select>
+            </div>
+        </div>
+        搜索小区：
+        <div class="layui-inline">
+            <input class="layui-input" name="id" id="demoReload" autocomplete="off">
+        </div>
+    </form>
+    <div class="demoTable">
+        <button class="layui-btn" data-type="reload">搜索</button>
     </div>
-    <button class="layui-btn" data-type="reload">搜索</button>
+    <table class="layui-hide" id="test" lay-filter="demo"></table>
 </div>
-<table class="layui-hide" id="test" lay-filter="demo"></table>
 </body>
 
 <div class="modal">
-    <div class="layui-carousel">
-        <div class="item" carousel-item>
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li class="layui-this">房间图片</li>
+            <li>房间信息</li>
+            <li>房间位置</li>
+        </ul>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <div class="layui-carousel">
+                    <div class="item" carousel-item>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-tab-item">内容2</div>
+            <div class="layui-tab-item">内容3</div>
+            <div class="layui-tab-item">内容4</div>
+            <div class="layui-tab-item">内容5</div>
         </div>
     </div>
+
 </div>
 <script type="text/html" id="barDemo">
     <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
@@ -37,11 +88,12 @@
 <script type="text/javascript">
 
     var table,form,$,carousel;
-    layui.use(['table','carousel'], function(){
+    layui.use(['table','carousel', 'element', 'form'], function(){
          table = layui.table;
          form = layui.form;
          $ = layui.jquery;
          carousel = layui.carousel;
+
         table.render({
             elem: '#test'
             ,url:'api.php?act=list'
@@ -50,15 +102,14 @@
                 {type:'numbers'}
                 ,{field:'room_no', title:'房间编号', width:80, unresize: true, sort: true}
                 ,{field:'comm_name', title:'小区名称', width:140, templet: '#usernameTpl'}
-                ,{field:'floor_num', title: '层数', width:65, sort: true}
-                ,{field:'house_no', title:'门牌号', width:65, templet: '#switchTpl', unresize: true}
+                ,{field:'floor_num', title: '层数', width:80, sort: true}
+                ,{field:'house_no', title:'门牌号', width:80, templet: '#switchTpl', unresize: true}
                 ,{field:'unit_info', title:'房间信息', width:130, templet: '#checkboxTpl', unresize: true}
-                ,{field:'room_area', title:'房间面积', width:65}
-                ,{field:'price', title:'房间标价', width:65}
+                ,{field:'room_area', title:'房间面积', width:90}
+                ,{field:'price', title:'房间标价', width:90}
                 ,{field:'room_address', title:'房间地址'}
                 ,{field:'rental_state', title:'状态', width:80}
                 ,{field:'zone_name', title:'所属区域', width:100}
-                ,{field:'release_data', title:'收房时间',width:110}
                 ,{field:'floor_no', title:'楼层', width:65}
                 ,{field:'room_num', title:'隔间数', width:90}
                 ,{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}
@@ -75,7 +126,7 @@
                 var _html ='';
                 layer.open({
                     type: 1,
-                    area: ['1400px', '900px'],
+                    area: ['900px', '700px'],
                     content: $('.modal').html(),
                 });
 
@@ -96,8 +147,8 @@
 
                             carousel.render({
                                 elem: $('.layui-layer-page .layui-carousel')[0]
-                                ,width: '100%' //设置容器宽度
-                                ,height: '70%' //设置容器宽度
+                                ,width: '890px' //设置容器宽度
+                                ,height: '576px' //设置容器宽度
                                 ,arrow: 'always' //始终显示箭头
                                 //,anim: 'updown' //切换动画方式
                             });
@@ -124,6 +175,39 @@
             }
         });
     });
+
+    function init() {
+        $.ajax({
+            url:"api.php",
+            type:"get",
+            data:{
+                act:'get_pic_url',
+                room_no: data.room_no,
+            },
+            dataType:"json",
+            success:function(data){
+                if(data.code == 1){
+                    $.each(data.data, function (k,v) {
+                        _html += '<div class="carouse-item"><img src="'+v.pic_url+'"></div>';
+                    })
+                    $('.layui-layer-page .item').html(_html);
+
+                    carousel.render({
+                        elem: $('.layui-layer-page .layui-carousel')[0]
+                        ,width: '890px' //设置容器宽度
+                        ,height: '576px' //设置容器宽度
+                        ,arrow: 'always' //始终显示箭头
+                        //,anim: 'updown' //切换动画方式
+                    });
+                }
+
+            },
+            error:function(xmlHttpRequest,textStatus,errorThrown){
+                console.log(textStatus+"出错！"+errorThrown);
+            }
+        });
+    }
+
 
 </script>
 </html>

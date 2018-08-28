@@ -7,7 +7,7 @@
  */
 
 //hash=lKoKHZmu&act=test
-$str = 'hash=lKoKHZmu&act=sendMassNotice';
+$str = 'hash=lKoKHZmu&act=refreshAccessToken';
 
 echo '明文：'.$str;
 echo '<br />';

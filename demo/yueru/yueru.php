@@ -13,7 +13,7 @@ use GuzzleHttp\Client;
 
 //$db->insert()
 $log = new \Monolog\Logger('yueru');
-$log->pushHandler(new \Monolog\Handler\StreamHandler('../../public/log/demo-yueru.log',\Monolog\Logger::INFO));
+$log->pushHandler(new \Monolog\Handler\StreamHandler('../../../public/log/demo-yueru.log',\Monolog\Logger::INFO));
 
 
 $yueru = new YueRu(new \GuzzleHttp\Client(), $db, $log);
@@ -374,6 +374,9 @@ class YueRu
     }
 
 
+    public function getRegion(){
+
+    }
     private function console($data){
         echo date('Y-m-d H:i:s').": $data\n";
     }
