@@ -30,4 +30,5 @@
 - datatables 
 - qiniu fetch抓取第三方图片
 - imagick
+- ip2region ip地址解析
 
