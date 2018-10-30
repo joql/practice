@@ -153,7 +153,8 @@ class juming{
     }
 
     public function export($type){
-        $data = $this->db->where('wx_state=1 and qq_state=1')->get('juming_url_id_list',null,['url','price','regist_time','expire_time','register']);
+        $data = $this->db->where('wx_state=1 and qq_state=1 and (register ="nh" or register ="22cn")')->get('juming_url_id_list',null,['url','price','regist_time','expire_time','register']);
+        //$data = $this->db->where('qq_state=1 and (register ="nh" or register ="22cn")')->get('juming_url_id_list',null,['url','price','regist_time','expire_time','register']);
         $header = ['域名','价格','域名注册时间','域名到期时间','域名注册商','域名购买地址'];
         foreach ($data as $k=>$v){
             $data[$k]['buy_url']='http://www.juming.com/mai_yes.htm?ym='.$v['url'];
