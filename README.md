@@ -31,4 +31,5 @@
 - qiniu fetch抓取第三方图片
 - imagick
 - ip2region ip地址查询 ip[最快] iplocation[其次] ip2region[太慢]
+- clipboard 复制到剪切板
 
