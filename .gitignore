@@ -1,5 +1,15 @@
+
+.idea/
+
 demo/upload/webupload/uploads/
+demo/public/log/
+demo/parse-app/data/
+demo/spider/getName/*.txt
+demo/spider/juming/list.csv
+
+
 vendor/
+
 public/img/ocr/*.png
 public/log/
 public/uploads/

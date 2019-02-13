@@ -15,6 +15,7 @@ use GuzzleHttp\Cookie\CookieJar;
 error_reporting(E_ALL & ~E_NOTICE);
 global $db;
 
+
 if(!empty($argv[1])){
     $act = $argv[1];
 }
@@ -122,7 +123,7 @@ class juming{
         $this->db->delete('juming_url_id_list');
         $list= array();
         for($i=1;$i<=30;$i++){
-            $url = 'http://www.juming.com/ykj/?api_sou=1&sfba=1999&dqsj=180&ymlx=0&qian1=80&qian2=100&changdu2=8&jgpx=0&meiye=0&page='.$i.'&_='.time().'176';
+            $url = 'http://www.juming.com/ykj/?api_sou=1&sfba=1999&dqsj=180&ymlx=0&qian1=80&changdu2=8&jgpx=0&meiye=0&page='.$i.'&_='.time().'176';
             $cookieJar = CookieJar::fromArray([
                 $this->cookie[0] => $this->cookie[1]
             ], 'www.juming.com');  // 此处记得请求域名需要保持跟请求的url host一致，否则不会携带此cookie。
@@ -153,7 +154,7 @@ class juming{
     }
 
     public function export($type){
-        $data = $this->db->where('wx_state=1 and qq_state=1 and (register ="nh" or register ="22cn")')->get('juming_url_id_list',null,['url','price','regist_time','expire_time','register']);
+        $data = $this->db->where('wx_state=1 and qq_state=1 and (register ="nh" or register ="22cn" or register ="xw")')->get('juming_url_id_list',null,['url','price','regist_time','expire_time','register']);
         //$data = $this->db->where('qq_state=1 and (register ="nh" or register ="22cn")')->get('juming_url_id_list',null,['url','price','regist_time','expire_time','register']);
         $header = ['域名','价格','域名注册时间','域名到期时间','域名注册商','域名购买地址'];
         foreach ($data as $k=>$v){
