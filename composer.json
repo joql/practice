@@ -3,7 +3,7 @@
     "authors": [
         {
             "name": "Joql",
-            "email": "@qq.com"
+            "email": "123@qq.com"
         }
     ],
     "require": {
@@ -13,6 +13,8 @@
         "houdunwang/zip": "^1.0",
         "guzzlehttp/guzzle": "~6.0",
         "joshcam/mysqli-database-class": "dev-master",
-        "qiniu/php-sdk": "^7.2"
+        "qiniu/php-sdk": "^7.2",
+        "jonnyw/php-phantomjs": "4.*",
+        "keboola/csv": "^2.0"
     }
 }
